@@ -9,7 +9,7 @@
 * `--amount`: Required (The amount we want to send to the burn-address)
 * `--reveal`: Optional (Default: maximum, same as `--amount`) (You can partially reveal the burned amount as BETH and encrypt the rest in a note file)
 * `--broadcaster-fee`: Optional (Default: 0)
-* `--broadcaster`: Required (It can be a http endpoint `https://relayer.worm.cx/broadcast` (If we want someone else to broadcast for us) or a private key `0x...` (If we want to broadcast ourself with another private key))
+* `--broadcaster`: Required (It can be a http endpoint `https://relayer.worm.cx/relay` (If we want someone else to broadcast for us, see the Relay section) or a private key `0x...` (If we want to broadcast ourself with another private key))
 * `--sell-on-uniswap`: Optional (Default: 0) Part of the reveal amount can be sold in exchange of ETH
 
 The burn info (Burn-key, amount etc.) is stored in `burn.json` in case of failure.
@@ -41,3 +41,13 @@ Creates a participation file: `participate_10_0.1.json`
 `worm-miner participate [COMMON OPTS] participate_*.json
 
 Claim all input participations.
+
+## Relay
+
+Spins up a HTTP server, generates proofs and broadcasts them on behalf of others.
+
+GET `/proof` returns minimum proving fee of the relayer.
+POST `/proof` gets inputs of the proof-of-burn zk circuit and starts proving.
+GET `/proof/{burn-addres}` gets cached proof for the given burn-address.
+GET `/relay` returns minimum broadcasting fee of the relayer
+POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
