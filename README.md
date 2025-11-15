@@ -38,7 +38,7 @@ Creates a participation file: `participate_10_0.1.json`
 
 ## Claim
 
-`worm-miner participate [COMMON OPTS] participate_*.json
+`worm-miner participate [COMMON OPTS] participate_*.json`
 
 Claim all input participations.
 
@@ -46,8 +46,8 @@ Claim all input participations.
 
 Spins up a HTTP server, generates proofs and broadcasts them on behalf of others.
 
-GET `/proof` returns minimum proving fee of the relayer.
-POST `/proof` gets inputs of the proof-of-burn zk circuit and starts proving.
-GET `/proof/{burn-addres}` gets cached proof for the given burn-address.
-GET `/relay` returns minimum broadcasting fee of the relayer
-POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
+* GET `/proof` returns minimum proving fee of the relayer.
+* POST `/proof` gets inputs of the proof-of-burn zk circuit and starts proving.
+* GET `/proof/{burn-addres}` gets cached proof for the given burn-address.
+* GET `/relay` returns minimum broadcasting fee of the relayer
+* POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
