@@ -38,7 +38,7 @@ Creates a participation file: `participate_10_0.1.json`
 
 ## Claim
 
-`worm-miner participate [COMMON OPTS] participate_*.json`
+`worm-miner claim [COMMON OPTS] participate_*.json`
 
 Claim all input participations.
 
