@@ -25,3 +25,19 @@ In case the proving/minting fails along the way, you can recover:
 
 `worm-miner spend --note note.json --amount 0.1`
 
+Creates a new note file for the remaining amount (E.g note2.json)
+
+## Participate
+
+`worm-miner participate [COMMON OPTS] --num-epochs 10 --amount-per-epoch 0.1`
+
+* `--num-epochs`: Participate in N next epochs
+* `--amount-per-epoch`: Put X BETH per epochs
+
+Creates a participation file: `participate_10_0.1.json`
+
+## Claim
+
+`worm-miner participate [COMMON OPTS] participate_*.json
+
+Claim all input participations.
