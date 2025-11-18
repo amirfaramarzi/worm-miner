@@ -1,6 +1,3 @@
-[package]
-name = "worm-miner"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
+[workspace]
+members = ["cli", "core", "server"]
+resolver = "3"
