@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use core::contracts::network::Network;
 
 /// Worm CLI
 #[derive(Parser, Debug)]
@@ -7,10 +8,8 @@ pub struct Args {
     #[command(subcommand)]
     command: Commands,
 
-    /// Options: ("anvil" | "sepolia" | "mainnet")
-    /// default: mainnet
-    #[arg(long)]
-    network: Option<String>,
+    #[arg(long, default_value_t = Network::Mainnet, value_enum)]
+    network: Network,
 }
 
 #[derive(Subcommand, Debug)]

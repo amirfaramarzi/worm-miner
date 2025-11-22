@@ -1,6 +1,7 @@
+use clap::ValueEnum;
 use std::{env, fmt::Display};
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum)]
 pub enum Network {
     Anvil,
     Sepolia,
