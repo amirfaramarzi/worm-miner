@@ -27,9 +27,9 @@ impl Contracts {
         let signer: PrivateKeySigner = private_key.as_ref().parse()?;
 
         let rpc_url = network.url();
-        let beth_addr = Address::from_str(network.beth_address())?;
-        let staking_addr = Address::from_str(network.staking_address())?;
-        let worm_addr = Address::from_str(network.worm_address())?;
+        let beth_addr = Address::from_str(&network.beth_address())?;
+        let staking_addr = Address::from_str(&network.staking_address())?;
+        let worm_addr = Address::from_str(&network.worm_address())?;
         Ok(Self {
             beth: BETHContract::new(rpc_url, beth_addr, signer.clone()).await?,
             staking: StakingContract::new(rpc_url, staking_addr, signer.clone()).await?,

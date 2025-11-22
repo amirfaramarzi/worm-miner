@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{env, fmt::Display};
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub enum Network {
@@ -46,29 +46,34 @@ impl Network {
     }
 
     //TODO
-    pub fn beth_address(&self) -> &'static str {
+    pub fn beth_address(&self) -> String {
         match self {
-            Network::Anvil => "",
-            Network::Sepolia => "",
-            Network::Mainnet => "",
+            Network::Anvil => {
+                env::var("ANVIL_BETH_ADDRESS").expect("provide ANVIL_BETH_ADDRESS env variable")
+            }
+            Network::Sepolia => "".to_string(),
+            Network::Mainnet => "".to_string(),
         }
     }
 
     //TODO
-    pub fn worm_address(&self) -> &'static str {
+    pub fn worm_address(&self) -> String {
         match self {
-            Network::Anvil => "",
-            Network::Sepolia => "",
-            Network::Mainnet => "",
+            Network::Anvil => {
+                env::var("ANVIL_WORM_ADDRESS").expect("provide ANVIL_WORM_ADDRESS env variable")
+            }
+            Network::Sepolia => "".to_string(),
+            Network::Mainnet => "".to_string(),
         }
     }
 
     //TODO
-    pub fn staking_address(&self) -> &'static str {
+    pub fn staking_address(&self) -> String {
         match self {
-            Network::Anvil => "",
-            Network::Sepolia => "",
-            Network::Mainnet => "",
+            Network::Anvil => env::var("ANVIL_STAKING_ADDRESS")
+                .expect("provide ANVIL_STAKING_ADDRESS env variable"),
+            Network::Sepolia => "".to_string(),
+            Network::Mainnet => "".to_string(),
         }
     }
 }
