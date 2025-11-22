@@ -29,7 +29,7 @@ Creates a new note file for the remaining amount (E.g note2.json)
 
 ## Participate
 
-`worm-miner participate [COMMON OPTS] --num-epochs 10 --amount-per-epoch 0.1`
+`worm-miner [COMMON OPTS] participate  --num-epochs 10 --amount-per-epoch 0.1`
 
 * `--num-epochs`: Participate in N next epochs
 * `--amount-per-epoch`: Put X BETH per epochs
@@ -38,7 +38,7 @@ Creates a participation file: `participate_10_0.1.json`
 
 ## Claim
 
-`worm-miner claim [COMMON OPTS] participate_*.json`
+`worm-miner [COMMON OPTS] claim participate_*.json`
 
 Claim all input participations.
 
