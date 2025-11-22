@@ -14,19 +14,19 @@ sol!(
     "./src/contracts/abis/WORM.abi.json"
 );
 
-struct WormContract {
+pub struct WormContract {
     pub instance: WormContractType,
 }
 
 impl WormContract {
     pub async fn new(
-        network: &str,
+        rpc_url: &str,
         address: Address,
         signer: PrivateKeySigner,
     ) -> Result<Self, TransportError> {
         let provider = ProviderBuilder::new()
             .wallet(signer)
-            .connect(network)
+            .connect(rpc_url)
             .await?;
         Ok(WormContract {
             instance: Worm::new(address, provider),

@@ -14,19 +14,19 @@ sol!(
     "./src/contracts/abis/BETH.abi.json"
 );
 
-struct BETHContract {
+pub struct BETHContract {
     pub instance: BETHContractType,
 }
 
 impl BETHContract {
     pub async fn new(
-        network: &str,
+        rpc_url: &str,
         address: Address,
         signer: PrivateKeySigner,
     ) -> Result<Self, TransportError> {
         let provider = ProviderBuilder::new()
             .wallet(signer)
-            .connect(network)
+            .connect(rpc_url)
             .await?;
         Ok(BETHContract {
             instance: BETH::new(address, provider),

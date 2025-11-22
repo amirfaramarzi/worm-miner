@@ -14,19 +14,19 @@ sol!(
     "./src/contracts/abis/Staking.abi.json"
 );
 
-struct StakingContract {
+pub struct StakingContract {
     pub instance: StakingContractType,
 }
 
 impl StakingContract {
     pub async fn new(
-        network: &str,
+        rpc_url: &str,
         address: Address,
         signer: PrivateKeySigner,
     ) -> Result<Self, TransportError> {
         let provider = ProviderBuilder::new()
             .wallet(signer)
-            .connect(network)
+            .connect(rpc_url)
             .await?;
         Ok(StakingContract {
             instance: Staking::new(address, provider),
