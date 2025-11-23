@@ -1,0 +1,16 @@
+use std::error::Error;
+
+use crate::contracts::network::Network;
+
+pub async fn burn(
+    network: Network,
+    private_key: String,
+    amount: u64,
+    reveal: u64,
+    broadcaster_fee: u64,
+    broadcaster: String,
+    sell_on_uniswap: u64,
+) -> Result<(), Box<dyn Error>> {
+    println!("Burning...");
+    Ok(())
+}

@@ -6,10 +6,10 @@ use core::contracts::network::Network;
 #[command(version, about, long_about = None)]
 pub struct Args {
     #[command(subcommand)]
-    command: Commands,
+    pub command: Commands,
 
     #[arg(long, default_value_t = Network::Mainnet, value_enum)]
-    network: Network,
+    pub network: Network,
 }
 
 #[derive(Subcommand, Debug)]
