@@ -1,11 +1,9 @@
-use std::error::Error;
-
 use alloy::primitives::U256;
 use ark_bn254::Fr;
 use light_poseidon::{Poseidon, PoseidonBytesHasher};
 
-pub fn poseidon4(a: U256, b: U256, c: U256, d: U256) -> Result<U256, Box<dyn Error>> {
-    let mut poseidon = Poseidon::<Fr>::new_circom(4).unwrap();
+pub fn poseidon4(a: U256, b: U256, c: U256, d: U256) -> Result<U256, anyhow::Error> {
+    let mut poseidon = Poseidon::<Fr>::new_circom(4)?;
 
     let a = a.to_be_bytes::<32>();
     let b = b.to_be_bytes::<32>();

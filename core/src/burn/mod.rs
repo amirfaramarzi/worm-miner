@@ -1,9 +1,8 @@
 pub mod burn_address;
+pub mod error;
 pub mod poseidon4;
 
-use std::error::Error;
-
-use crate::contracts::network::Network;
+use crate::{burn::error::BurnError, contracts::network::Network};
 
 pub async fn burn(
     network: Network,
@@ -13,7 +12,7 @@ pub async fn burn(
     broadcaster_fee: u64,
     broadcaster: String,
     sell_on_uniswap: u64,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), BurnError> {
     println!("Burning...");
     Ok(())
 }

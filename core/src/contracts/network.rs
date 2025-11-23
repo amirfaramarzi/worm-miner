@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use clap::ValueEnum;
 use std::{env, fmt::Display};
 
@@ -9,14 +10,14 @@ pub enum Network {
 }
 
 impl TryFrom<&str> for Network {
-    type Error = String;
+    type Error = anyhow::Error;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         Ok(match value {
             "anvil" => Network::Anvil,
             "sepolia" => Network::Sepolia,
             "mainnet" => Network::Mainnet,
-            _ => return Err(format!("Invalid network: '{value}' ")),
+            _ => return Err(anyhow!("Invalid network: '{value}' ")),
         })
     }
 }
