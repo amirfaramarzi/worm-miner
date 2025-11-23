@@ -1,3 +1,6 @@
+pub mod burn_address;
+pub mod poseidon4;
+
 use std::error::Error;
 
 use crate::contracts::network::Network;
