@@ -4,7 +4,7 @@ pub mod staking;
 pub mod uniswap;
 pub mod worm;
 
-use std::{error::Error, str::FromStr};
+use std::str::FromStr;
 
 use alloy::{primitives::Address, signers::local::PrivateKeySigner};
 use beth::*;
