@@ -8,4 +8,7 @@ pub enum BurnError {
         value: String,
         why: &'static str,
     },
+
+    #[error("unknown error: {0}")]
+    Unknown(#[from] anyhow::Error),
 }
