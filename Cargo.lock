@@ -1292,6 +1292,7 @@ dependencies = [
  "ark-ff 0.5.0",
  "clap",
  "light-poseidon",
+ "rand 0.9.2",
  "thiserror 2.0.17",
 ]
 
