@@ -1,16 +1,15 @@
-use alloy::primitives::U256;
+use ark_bn254::Fr;
+use ark_ff::BigInt;
 use rand::RngCore;
 
-pub fn new_burn_key() -> U256 {
-    // let mut r = rand::random();
+pub fn new_burn_key() -> Fr {
     let mut rng = rand::rng();
 
-    // Method 1: Generate 4 random u64s and construct U256
     let limbs = [
         rng.next_u64(),
         rng.next_u64(),
         rng.next_u64(),
         rng.next_u64(),
     ];
-    U256::from_limbs(limbs)
+    Fr::new(BigInt::new(limbs))
 }

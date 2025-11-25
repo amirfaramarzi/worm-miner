@@ -2,7 +2,7 @@ pub mod burn_address;
 pub mod error;
 pub mod poseidon4;
 
-use alloy::primitives::U256;
+use ark_bn254::Fr;
 
 use crate::{
     burn::{
@@ -23,8 +23,8 @@ pub async fn burn(
 ) -> Result<(), BurnError> {
     let burn_key = new_burn_key();
     println!("Your burn_key: `{}`", burn_key);
-    let extra_commitment = U256::from(1); // TODO calculate extra commitment
-    let burn_address = burn_address(burn_key, U256::from(reveal), extra_commitment)?;
+    let extra_commitment = Fr::from(1); // TODO calculate extra commitment
+    let burn_address = burn_address(burn_key, Fr::from(reveal), extra_commitment)?;
     println!("your burn address: `{}`", burn_address);
     Ok(())
 }
