@@ -6,7 +6,7 @@ pub mod poseidon4;
 
 use std::str::FromStr;
 
-use alloy::primitives::Address;
+use alloy::primitives::*;
 use ark_bn254::Fr;
 
 use crate::{
@@ -28,17 +28,27 @@ pub async fn burn(
     broadcaster: String,
     sell_on_uniswap: u64,
     receiver_address: String,
+    prover_fee: u64,
 ) -> Result<(), BurnError> {
-    let burn_key = new_burn_key();
     let broadcaster = Broadcaster::try_from(broadcaster.as_ref())?;
 
-    println!("Your burn_key: `{}`", burn_key);
+    let receiver_hook = if sell_on_uniswap == 0 {
+        Bytes::new()
+    } else {
+        Bytes::new() // TODO make calldata with uniswap interface
+    };
+
+    let broadcaster_fee = U256::from(broadcaster_fee);
+    let prover_fee = U256::from(prover_fee);
 
     let receiver_address = Address::from_str(&receiver_address)
         .map_err(|e| BurnError::validation("receiver_address", receiver_address, e.to_string()))?;
 
     let extra_commitment =
         ExtraCommitment::new(receiver_address, prover_fee, broadcaster_fee, receiver_hook);
+
+    let burn_key = new_burn_key();
+    println!("Your burn_key: `{}`", burn_key);
 
     let burn_address = burn_address(burn_key, Fr::from(reveal), extra_commitment)?;
 

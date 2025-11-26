@@ -18,6 +18,7 @@ async fn main() {
             broadcaster,
             sell_on_uniswap,
             receiver_address,
+            prover_fee,
         } => {
             burn(
                 network,
@@ -28,6 +29,7 @@ async fn main() {
                 broadcaster,
                 sell_on_uniswap,
                 receiver_address,
+                prover_fee,
             )
             .await
         }
