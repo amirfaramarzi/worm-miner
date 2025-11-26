@@ -28,18 +28,19 @@ impl ExtraCommitment {
     }
 
     pub fn hash(&self) -> Fr {
-        Fr::from_be_bytes_mod_order(
-            &keccak256(
-                (
-                    self.broadcaster_fee,
-                    self.prover_fee,
-                    self.receiver,
-                    &self.receiver_hook,
-                )
-                    .abi_encode_packed()
-                    .as_slice(),
+        let hash = keccak256(
+            (
+                self.broadcaster_fee,
+                self.prover_fee,
+                self.receiver,
+                &self.receiver_hook,
             )
-            .0,
+                .abi_encode_packed()
+                .as_slice(),
         )
+        .0;
+
+        let shifted = U256::from_be_bytes(hash) >> U256::from(8);
+        Fr::from_be_bytes_mod_order(shifted.as_le_slice())
     }
 }
