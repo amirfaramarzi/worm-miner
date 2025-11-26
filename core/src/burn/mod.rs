@@ -12,7 +12,7 @@ use crate::{
     burn::{
         burn_address::{burn_address, burn_key::new_burn_key},
         error::BurnError,
-        extra_commitment::new_extra_commitment,
+        extra_commitment::ExtraCommitment,
     },
     contracts::network::Network,
 };
@@ -34,7 +34,7 @@ pub async fn burn(
         .map_err(|e| BurnError::validation("receiver_address", receiver_address, e.to_string()))?;
 
     let extra_commitment =
-        new_extra_commitment(receiver_address, prover_fee, broadcaster_fee, receiver_hook);
+        ExtraCommitment::new(receiver_address, prover_fee, broadcaster_fee, receiver_hook);
 
     let burn_address = burn_address(burn_key, Fr::from(reveal), extra_commitment)?;
 
