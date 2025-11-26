@@ -1,3 +1,4 @@
+pub mod broadcaster;
 pub mod burn_address;
 pub mod error;
 pub mod extra_commitment;
@@ -10,6 +11,7 @@ use ark_bn254::Fr;
 
 use crate::{
     burn::{
+        broadcaster::Broadcaster,
         burn_address::{burn_address, burn_key::new_burn_key},
         error::BurnError,
         extra_commitment::ExtraCommitment,
@@ -28,6 +30,8 @@ pub async fn burn(
     receiver_address: String,
 ) -> Result<(), BurnError> {
     let burn_key = new_burn_key();
+    let broadcaster = Broadcaster::try_from(broadcaster.as_ref())?;
+
     println!("Your burn_key: `{}`", burn_key);
 
     let receiver_address = Address::from_str(&receiver_address)
