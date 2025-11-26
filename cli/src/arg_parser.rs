@@ -37,6 +37,10 @@ pub enum Commands {
 
         #[arg(long, default_value_t = 0)]
         sell_on_uniswap: u64,
+
+        /// User will get BETH on this address 0x...
+        #[arg(long, default_value_t = 0)]
+        receiver_address: String,
     },
 
     /// In case the proving/minting fails along the way, you can recover

@@ -11,6 +11,7 @@
 * `--broadcaster-fee`: Optional (Default: 0)
 * `--broadcaster`: Required (It can be a http endpoint `https://relayer.worm.cx/relay` (If we want someone else to broadcast for us, see the Relay section) or a private key `0x...` (If we want to broadcast ourself with another private key))
 * `--sell-on-uniswap`: Optional (Default: 0) Part of the reveal amount can be sold in exchange of ETH
+* `--receiver_address`: Required (Address) user will get BETH on this address
 
 The burn info (Burn-key, amount etc.) is stored in `burn.json` in case of failure.
 The remaining coin (`--amount` - `--reveal`) will be saved as a note in a JSON file.
