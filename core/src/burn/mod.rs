@@ -1,5 +1,6 @@
 pub mod burn_address;
 pub mod error;
+pub mod extra_commitment;
 pub mod poseidon4;
 
 use ark_bn254::Fr;
@@ -8,6 +9,7 @@ use crate::{
     burn::{
         burn_address::{burn_address, burn_key::new_burn_key},
         error::BurnError,
+        extra_commitment::new_extra_commitment,
     },
     contracts::network::Network,
 };
@@ -23,8 +25,12 @@ pub async fn burn(
 ) -> Result<(), BurnError> {
     let burn_key = new_burn_key();
     println!("Your burn_key: `{}`", burn_key);
-    let extra_commitment = Fr::from(1); // TODO calculate extra commitment
+
+    let extra_commitment =
+        new_extra_commitment(receiver_address, prover_fee, broadcaster_fee, receiver_hook);
+
     let burn_address = burn_address(burn_key, Fr::from(reveal), extra_commitment)?;
+
     println!("your burn address: `{}`", burn_address);
     Ok(())
 }
