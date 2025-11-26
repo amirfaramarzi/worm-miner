@@ -3,6 +3,7 @@ use alloy::signers::local::PrivateKeySigner;
 use reqwest::Url;
 use std::str::FromStr;
 
+#[derive(Clone, Debug)]
 pub enum Broadcaster {
     EndPoint(Url),
     PrivateKey(PrivateKeySigner),

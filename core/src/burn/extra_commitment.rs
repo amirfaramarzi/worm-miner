@@ -3,7 +3,8 @@ use alloy::{
     sol_types::SolValue,
 };
 use ark_bn254::Fr;
-use ark_ff::PrimeField;
+
+use crate::utils::*;
 
 pub struct ExtraCommitment {
     pub receiver: Address,
@@ -41,6 +42,6 @@ impl ExtraCommitment {
         .0;
 
         let shifted = U256::from_be_bytes(hash) >> U256::from(8);
-        Fr::from_be_bytes_mod_order(shifted.as_le_slice())
+        shifted.to_fr()
     }
 }
