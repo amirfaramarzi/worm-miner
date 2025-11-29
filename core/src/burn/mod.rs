@@ -1,5 +1,6 @@
 pub mod broadcaster;
 pub mod burn_address;
+pub mod burn_output;
 pub mod error;
 pub mod extra_commitment;
 pub mod poseidon4;
@@ -14,6 +15,7 @@ use alloy::{
 use crate::{
     burn::{
         burn_address::{burn_address, burn_key::new_burn_key},
+        burn_output::BurnOutput,
         error::BurnError,
         extra_commitment::ExtraCommitment,
     },
@@ -30,15 +32,19 @@ pub async fn burn(
     sell_on_uniswap: U256,
     receiver_address: Address,
     prover_fee: U256,
-) -> Result<(), BurnError> {
+) -> Result<BurnOutput, BurnError> {
     let receiver_hook = if sell_on_uniswap == 0 {
         Bytes::new()
     } else {
         Bytes::new() // TODO make calldata with uniswap interface
     };
 
-    let extra_commitment =
-        ExtraCommitment::new(receiver_address, prover_fee, broadcaster_fee, receiver_hook);
+    let extra_commitment = ExtraCommitment::new(
+        receiver_address,
+        prover_fee,
+        broadcaster_fee,
+        receiver_hook.clone(),
+    );
 
     let burn_key = new_burn_key();
     println!("Your burn_key: `{}`", burn_key);
@@ -65,5 +71,14 @@ pub async fn burn(
 
     let receipt = pending.get_receipt().await?;
     println!("receipt:\n{:?}", receipt);
-    Ok(())
+
+    Ok(BurnOutput::new(
+        network,
+        burn_key,
+        reveal,
+        receiver_address,
+        prover_fee,
+        broadcaster_fee,
+        receiver_hook,
+    ))
 }
