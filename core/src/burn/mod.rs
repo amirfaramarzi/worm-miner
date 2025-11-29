@@ -28,7 +28,6 @@ pub async fn burn(
     amount: U256,
     reveal: U256,
     broadcaster_fee: U256,
-    broadcaster: Broadcaster,
     sell_on_uniswap: U256,
     receiver_address: Address,
     prover_fee: U256,

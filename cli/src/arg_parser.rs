@@ -36,10 +36,6 @@ pub enum Commands {
         #[arg(long, value_parser = eth_amount_parser, default_value_t = { U256::from(0) })]
         broadcaster_fee: U256,
 
-        /// Endpoint or different private-key
-        #[arg(long, value_parser = broadcaster_parser)]
-        broadcaster: Broadcaster,
-
         // Amount of tokens you want to swap on uniswap
         #[arg(long, value_parser = eth_amount_parser, default_value_t = { U256::from(0) })]
         sell_on_uniswap: U256,
