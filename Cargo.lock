@@ -1234,8 +1234,13 @@ name = "cli"
 version = "0.1.0"
 dependencies = [
  "alloy",
+ "anyhow",
+ "ark-bn254",
+ "ark-ff 0.5.0",
  "clap",
  "core",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 

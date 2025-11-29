@@ -47,6 +47,10 @@ pub enum Commands {
         /// Default is `0` in case you want to prove it yourself
         #[arg(long, value_parser = eth_amount_parser, default_value_t = { U256::from(0) })]
         prover_fee: U256,
+
+        /// output file
+        #[arg(long, default_value_t = { String::from("./burn.json") })]
+        out: String,
     },
 
     /// In case the proving/minting fails along the way, you can recover
@@ -86,21 +90,17 @@ pub enum Commands {
 }
 
 fn eth_amount_parser(s: &str) -> Result<U256, &'static str> {
-    dbg!(&s);
     parse_ether(s).map_err(|_| "invalid eth amount")
 }
 
 fn eth_address_parser(s: &str) -> Result<Address, &'static str> {
-    dbg!(&s);
     Address::from_str(s).map_err(|_| "invalid address")
 }
 
 fn broadcaster_parser(s: &str) -> Result<Broadcaster, &'static str> {
-    dbg!(&s);
     Broadcaster::try_from(s).map_err(|_| "invalid broadcaster")
 }
 
 fn private_key_parser(s: &str) -> Result<PrivateKeySigner, &'static str> {
-    dbg!(&s);
     PrivateKeySigner::from_str(s).map_err(|_| "invalid private key")
 }
