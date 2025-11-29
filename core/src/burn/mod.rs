@@ -13,13 +13,12 @@ use alloy::{
 
 use crate::{
     burn::{
-        broadcaster::Broadcaster,
         burn_address::{burn_address, burn_key::new_burn_key},
         error::BurnError,
         extra_commitment::ExtraCommitment,
     },
     contracts::network::Network,
-    utils::ToFr,
+    utils::TryToFr,
 };
 
 pub async fn burn(
@@ -44,7 +43,13 @@ pub async fn burn(
     let burn_key = new_burn_key();
     println!("Your burn_key: `{}`", burn_key);
 
-    let burn_address = burn_address(burn_key, reveal.to_fr(), extra_commitment)?;
+    let burn_address = burn_address(
+        burn_key,
+        reveal
+            .try_to_fr()
+            .map_err(|x| Into::<anyhow::Error>::into(x))?,
+        extra_commitment,
+    )?;
 
     println!("your burn address: `{}`", burn_address);
 

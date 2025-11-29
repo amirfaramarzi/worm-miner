@@ -12,7 +12,7 @@ pub fn burn_address(
     reveal_amount: Fr,
     extra_commitment: ExtraCommitment,
 ) -> Result<Address, anyhow::Error> {
-    let hashed = poseidon4::poseidon4(prefix(), burn_key, reveal_amount, extra_commitment.hash())?;
+    let hashed = poseidon4::poseidon4(prefix(), burn_key, reveal_amount, extra_commitment.hash()?)?;
     let bytes = hashed.into_bigint().to_bytes_be();
     let address = Address::from_slice(&bytes[0..20]);
     Ok(address)

@@ -28,7 +28,7 @@ impl ExtraCommitment {
         }
     }
 
-    pub fn hash(&self) -> Fr {
+    pub fn hash(&self) -> Result<Fr, ToFrOverFlowError> {
         let hash = keccak256(
             (
                 self.broadcaster_fee,
@@ -42,6 +42,6 @@ impl ExtraCommitment {
         .0;
 
         let shifted = U256::from_be_bytes(hash) >> U256::from(8);
-        shifted.to_fr()
+        shifted.try_to_fr()
     }
 }
