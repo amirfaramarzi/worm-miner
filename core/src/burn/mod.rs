@@ -51,7 +51,6 @@ pub async fn burn(
 
     let provider = ProviderBuilder::new()
         .wallet(private_key)
-        .with_chain_id(31337)
         .connect(network.url())
         .await?;
 
