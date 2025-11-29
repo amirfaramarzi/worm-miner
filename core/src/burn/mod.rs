@@ -4,7 +4,12 @@ pub mod error;
 pub mod extra_commitment;
 pub mod poseidon4;
 
-use alloy::{primitives::*, signers::local::PrivateKeySigner};
+use alloy::{
+    primitives::*,
+    providers::{Provider, ProviderBuilder},
+    rpc::types::TransactionRequest,
+    signers::local::PrivateKeySigner,
+};
 
 use crate::{
     burn::{
@@ -43,5 +48,19 @@ pub async fn burn(
     let burn_address = burn_address(burn_key, reveal.to_fr(), extra_commitment)?;
 
     println!("your burn address: `{}`", burn_address);
+
+    let provider = ProviderBuilder::new()
+        .wallet(private_key)
+        .with_chain_id(31337)
+        .connect(network.url())
+        .await?;
+
+    let tx = TransactionRequest::default().to(burn_address).value(amount);
+
+    let pending = provider.send_transaction(tx).await?;
+    println!("pending:\n{:?}", pending);
+
+    let receipt = pending.get_receipt().await?;
+    println!("receipt:\n{:?}", receipt);
     Ok(())
 }
