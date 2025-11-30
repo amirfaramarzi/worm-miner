@@ -3,7 +3,6 @@ pub mod burn_address;
 pub mod burn_output;
 pub mod error;
 pub mod extra_commitment;
-pub mod poseidon4;
 
 use alloy::{
     primitives::*,
