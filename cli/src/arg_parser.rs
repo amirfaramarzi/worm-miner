@@ -49,8 +49,8 @@ pub enum Commands {
         prover_fee: U256,
 
         /// output file
-        #[arg(long, default_value_t = { String::from("./burn.json") })]
-        out: String,
+        #[arg(long)]
+        out: Option<PathBuf>,
     },
 
     /// In case the proving/minting fails along the way, you can recover

@@ -31,7 +31,7 @@ pub async fn burn(
     sell_on_uniswap: U256,
     receiver_address: Address,
     prover_fee: U256,
-) -> Result<BurnOutput, BurnError> {
+) -> Result<(BurnOutput, Address), BurnError> {
     let receiver_hook = if sell_on_uniswap == 0 {
         Bytes::new()
     } else {
@@ -71,13 +71,16 @@ pub async fn burn(
     let receipt = pending.get_receipt().await?;
     println!("receipt:\n{:?}", receipt);
 
-    Ok(BurnOutput::new(
-        network,
-        burn_key,
-        reveal,
-        receiver_address,
-        prover_fee,
-        broadcaster_fee,
-        receiver_hook,
+    Ok((
+        BurnOutput::new(
+            network,
+            burn_key,
+            reveal,
+            receiver_address,
+            prover_fee,
+            broadcaster_fee,
+            receiver_hook,
+        ),
+        burn_address,
     ))
 }

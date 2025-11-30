@@ -7,7 +7,7 @@ use core::{
     burn::{burn, burn_output::BurnOutput},
     mint::mint,
 };
-use std::process::exit;
+use std::{path::PathBuf, process::exit, str::FromStr};
 
 #[tokio::main]
 async fn main() {
@@ -25,15 +25,7 @@ async fn main() {
             prover_fee,
             out: out_file,
         } => {
-            // We should validate input file before start burning
-            let out_file = match validate_output_file(out_file) {
-                Ok(x) => x,
-                Err(e) => {
-                    eprintln!("invalid out file: {}", e);
-                    exit(1);
-                }
-            };
-            let out = match burn(
+            let (out, burn_address) = match burn(
                 network,
                 private_key,
                 amount,
@@ -52,6 +44,20 @@ async fn main() {
                 }
             };
             let json = BurnOutputJson::from(out).to_json();
+            println!("burn result: {}", json);
+
+            let out_file = match out_file {
+                Some(out_file) if out_file.is_dir() => {
+                    out_file.join(format!("burn_{}.json", burn_address))
+                }
+                Some(out_file) if out_file.is_file() => out_file
+                    .parent()
+                    .unwrap()
+                    .join(format!("burn_{}.json", burn_address)),
+                _ => PathBuf::from_str(&format!("./burn_{}.json", burn_address)).unwrap(),
+            };
+
+            println!("writing burn result in: `{}`", out_file.to_str().unwrap());
             if let Err(e) = std::fs::write(out_file, &json) {
                 println!(
                     "error `{}` while writing to file, your burn.json here \n{}",
