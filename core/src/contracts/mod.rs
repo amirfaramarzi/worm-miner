@@ -4,7 +4,7 @@ pub mod staking;
 pub mod uniswap;
 pub mod worm;
 
-use std::{error::Error, str::FromStr};
+use std::str::FromStr;
 
 use alloy::{primitives::Address, signers::local::PrivateKeySigner};
 use beth::*;
@@ -22,7 +22,7 @@ impl Contracts {
     pub async fn new(
         network: impl AsRef<str>,
         private_key: impl AsRef<str>,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self, anyhow::Error> {
         let network = Network::try_from(network.as_ref())?;
         let signer: PrivateKeySigner = private_key.as_ref().parse()?;
 
