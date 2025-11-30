@@ -54,10 +54,14 @@ pub enum Commands {
     },
 
     /// In case the proving/minting fails along the way, you can recover
-    Recover {
+    Mint {
         /// Json file (ex: burn.json)
         #[arg(long)]
-        file: PathBuf,
+        file: String,
+
+        /// Json file (ex: burn.json)
+        #[arg(long, value_parser = broadcaster_parser)]
+        broadcaster: Broadcaster,
     },
 
     /// Creates a new note file for the remaining amount (E.g note2.json)

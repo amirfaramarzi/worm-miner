@@ -3,7 +3,10 @@ pub mod fs;
 
 use crate::{arg_parser::Args, fs::*};
 use clap::Parser;
-use core::burn::burn;
+use core::{
+    burn::{burn, burn_output::BurnOutput},
+    mint::mint,
+};
 use std::process::exit;
 
 #[tokio::main]
@@ -56,7 +59,45 @@ async fn main() {
                 )
             }
         }
-        arg_parser::Commands::Recover { file: _ } => todo!(),
+        arg_parser::Commands::Mint { file, broadcaster } => {
+            let file = match validate_output_file(file) {
+                Ok(x) => x,
+                Err(e) => {
+                    println!("{e}");
+                    exit(1);
+                }
+            };
+            let content = match std::fs::read_to_string(file) {
+                Ok(x) => x,
+                Err(e) => {
+                    println!("{e}");
+                    exit(1);
+                }
+            };
+            let burn_output_json = match BurnOutputJson::from_json(&content) {
+                Ok(x) => x,
+                Err(e) => {
+                    println!("{e}");
+                    exit(1);
+                }
+            };
+
+            let burn_output = match BurnOutput::try_from(burn_output_json) {
+                Ok(x) => x,
+                Err(e) => {
+                    println!("{e}");
+                    exit(1);
+                }
+            };
+
+            let out = match mint(burn_output, broadcaster).await {
+                Ok(x) => x,
+                Err(e) => {
+                    println!("mint error: {e}");
+                    exit(1)
+                }
+            };
+        }
         arg_parser::Commands::Spend {
             note: _,
             amount: _amount,
