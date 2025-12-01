@@ -1,4 +1,4 @@
-use std::{error::Error, fmt::Display};
+use std::fmt::Display;
 
 use alloy::primitives::U256;
 use ark_bn254::Fr;

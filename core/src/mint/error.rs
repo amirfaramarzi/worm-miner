@@ -1,3 +1,4 @@
+use alloy::transports::TransportError;
 use std::borrow::Cow;
 use thiserror::Error;
 
@@ -12,6 +13,9 @@ pub enum MintError {
 
     #[error("unknown error: {0}")]
     Unknown(#[from] anyhow::Error),
+
+    #[error("transport error: {0}")]
+    Transport(#[from] TransportError),
 }
 
 impl MintError {
