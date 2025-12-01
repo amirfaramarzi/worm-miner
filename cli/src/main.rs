@@ -66,13 +66,7 @@ async fn main() {
             }
         }
         arg_parser::Commands::Mint { file, broadcaster } => {
-            let file = match validate_output_file(file) {
-                Ok(x) => x,
-                Err(e) => {
-                    println!("{e}");
-                    exit(1);
-                }
-            };
+            let file = PathBuf::from(file);
             let content = match std::fs::read_to_string(file) {
                 Ok(x) => x,
                 Err(e) => {
