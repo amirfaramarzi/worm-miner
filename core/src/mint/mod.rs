@@ -1,19 +1,24 @@
 pub mod error;
 pub mod witness_input_file;
+use alloy::rlp::Encodable;
 
 use crate::{
     burn::{
         broadcaster::Broadcaster, burn_address::burn_address, burn_output::BurnOutput,
         extra_commitment::ExtraCommitment,
     },
-    mint::error::MintError,
+    mint::{error::MintError, witness_input_file::WitnessInputFile},
     utils::TryToFr,
 };
-use alloy::providers::{Provider, ProviderBuilder};
+use alloy::{
+    eips::BlockId,
+    primitives::keccak256,
+    providers::{Provider, ProviderBuilder},
+};
 use anyhow::anyhow;
 
 pub async fn mint(burn_output: BurnOutput, broadcaster: Broadcaster) -> Result<(), MintError> {
-    let extra_commitment = ExtraCommitment::new(
+    let burn_extra_commitment = ExtraCommitment::new(
         burn_output.receiver,
         burn_output.prover_fee,
         burn_output.broadcaster_fee,
@@ -26,14 +31,37 @@ pub async fn mint(burn_output: BurnOutput, broadcaster: Broadcaster) -> Result<(
             .reveal_amount
             .try_to_fr()
             .map_err(|e| anyhow!("{e}"))?,
-        extra_commitment,
+        burn_extra_commitment.clone(),
     )?;
 
     let provider = ProviderBuilder::new()
         .connect(burn_output.network.url())
         .await?;
 
-    let proof = provider.get_proof(burn_address, vec![]).await?;
-    dbg!(proof);
+    // making sure that proof and block_header are pointing to same block
+    let (block_header, proof) = loop {
+        let block = provider
+            .get_block(BlockId::latest())
+            .await?
+            .ok_or(anyhow!("block not found"))?;
+        let proof = provider.get_proof(burn_address, vec![]).await?;
+        if block.header.state_root == keccak256(&proof.account_proof[0]) {
+            let mut block_header = vec![];
+            block.header.inner.encode(&mut block_header);
+            break (block_header, proof);
+        }
+    };
+
+    let witness_input_file = WitnessInputFile::new(
+        proof,
+        block_header,
+        burn_output.burn_key,
+        burn_output.reveal_amount,
+        burn_extra_commitment.hash().unwrap(),
+        burn_output.receiver,
+    )?;
+
+    // let witness = generate_witness(witness_input_file, burn_address);
+
     todo!()
 }

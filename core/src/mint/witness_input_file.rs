@@ -45,7 +45,7 @@ impl WitnessInputFile {
         header_bytes: Vec<u8>,
         burn_key: Fr,
         spend: U256,
-        burn_extra_commitment: U256,
+        burn_extra_commitment: Fr,
         prover: Address,
     ) -> Result<Self, anyhow::Error> {
         let leaf = proof

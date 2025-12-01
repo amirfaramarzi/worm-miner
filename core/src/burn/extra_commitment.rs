@@ -6,6 +6,7 @@ use ark_bn254::Fr;
 
 use crate::utils::*;
 
+#[derive(Clone, Debug)]
 pub struct ExtraCommitment {
     pub receiver: Address,
     pub prover_fee: U256,
