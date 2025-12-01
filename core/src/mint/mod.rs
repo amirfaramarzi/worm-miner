@@ -1,4 +1,5 @@
 pub mod error;
+pub mod witness_input_file;
 
 use crate::{
     burn::{
