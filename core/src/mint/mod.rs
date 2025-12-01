@@ -1,11 +1,10 @@
 pub mod error;
 pub mod witness_input_file;
-use alloy::rlp::Encodable;
+use alloy::{primitives::Address, rlp::Encodable, signers::local::PrivateKeySigner};
 
 use crate::{
     burn::{
-        broadcaster::Broadcaster, burn_address::burn_address, burn_output::BurnOutput,
-        extra_commitment::ExtraCommitment,
+        burn_address::burn_address, burn_output::BurnOutput, extra_commitment::ExtraCommitment,
     },
     mint::{error::MintError, witness_input_file::WitnessInputFile},
     utils::TryToFr,
@@ -17,7 +16,13 @@ use alloy::{
 };
 use anyhow::anyhow;
 
-pub async fn mint(burn_output: BurnOutput, broadcaster: Broadcaster) -> Result<(), MintError> {
+/// [singer] who calls mint() of BETH and pays gas fee
+/// [prover_address] who gets prover_fee
+pub async fn mint(
+    burn_output: BurnOutput,
+    prover_address: Address,
+    signer: PrivateKeySigner,
+) -> Result<(), MintError> {
     let burn_extra_commitment = ExtraCommitment::new(
         burn_output.receiver,
         burn_output.prover_fee,
@@ -58,7 +63,7 @@ pub async fn mint(burn_output: BurnOutput, broadcaster: Broadcaster) -> Result<(
         burn_output.burn_key,
         burn_output.reveal_amount,
         burn_extra_commitment.hash().unwrap(),
-        burn_output.receiver,
+        prover_address,
     )?;
 
     // let witness = generate_witness(witness_input_file, burn_address);

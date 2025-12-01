@@ -89,14 +89,21 @@ async fn main() {
                     exit(1);
                 }
             };
-
-            let out = match mint(burn_output, broadcaster).await {
-                Ok(x) => x,
-                Err(e) => {
-                    println!("mint error: {e}");
-                    exit(1)
+            match broadcaster {
+                // TODO send request to a third party prover
+                core::burn::broadcaster::Broadcaster::EndPoint(url) => todo!(),
+                core::burn::broadcaster::Broadcaster::PrivateKey(local_signer) => {
+                    // In self proving mode, prover is actually receiver in case user accidentally sets prover-fee not zero
+                    let prover_address = burn_output.receiver;
+                    let out = match mint(burn_output, prover_address, local_signer).await {
+                        Ok(x) => x,
+                        Err(e) => {
+                            println!("mint error: {e}");
+                            exit(1)
+                        }
+                    };
                 }
-            };
+            }
         }
         arg_parser::Commands::Spend {
             note: _,
