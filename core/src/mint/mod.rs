@@ -1,4 +1,5 @@
 pub mod error;
+pub mod proof_generator;
 pub mod witness_generator;
 pub mod witness_input_file;
 
@@ -9,7 +10,8 @@ use crate::{
         burn_address::burn_address, burn_output::BurnOutput, extra_commitment::ExtraCommitment,
     },
     mint::{
-        error::MintError, witness_generator::generate_witness, witness_input_file::WitnessInputFile,
+        error::MintError, proof_generator::generate_proof, witness_generator::generate_witness,
+        witness_input_file::WitnessInputFile,
     },
     utils::TryToFr,
 };
@@ -70,7 +72,13 @@ pub async fn mint(
         prover_address,
     )?;
 
-    let witness = generate_witness(witness_input_file, burn_address)?;
+    println!("Generating witness...");
+    let witness_file = generate_witness(witness_input_file, burn_address)?;
+
+    println!("Generating proof...");
+    let proof = generate_proof(witness_file)?;
+
+    println!("Proof:\n{}", proof.to_json());
 
     todo!()
 }

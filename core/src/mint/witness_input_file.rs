@@ -1,10 +1,7 @@
 use std::{fs, path::PathBuf};
 
 use alloy::{
-    primitives::{
-        Address, U256, keccak256,
-        utils::{parse_ether, parse_units},
-    },
+    primitives::{Address, U256, keccak256, utils::parse_ether},
     rlp::RlpDecodable,
     rpc::types::EIP1186AccountProofResponse,
 };
