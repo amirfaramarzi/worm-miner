@@ -1,12 +1,16 @@
 pub mod error;
+pub mod witness_generator;
 pub mod witness_input_file;
+
 use alloy::{primitives::Address, rlp::Encodable, signers::local::PrivateKeySigner};
 
 use crate::{
     burn::{
         burn_address::burn_address, burn_output::BurnOutput, extra_commitment::ExtraCommitment,
     },
-    mint::{error::MintError, witness_input_file::WitnessInputFile},
+    mint::{
+        error::MintError, witness_generator::generate_witness, witness_input_file::WitnessInputFile,
+    },
     utils::TryToFr,
 };
 use alloy::{
@@ -66,7 +70,7 @@ pub async fn mint(
         prover_address,
     )?;
 
-    // let witness = generate_witness(witness_input_file, burn_address);
+    let witness = generate_witness(witness_input_file, burn_address)?;
 
     todo!()
 }

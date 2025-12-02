@@ -13,13 +13,13 @@ use alloy::{
 
 use crate::{
     burn::{
-        burn_address::{burn_address, burn_key::new_burn_key},
+        burn_address::{burn_address, burn_key::find_burn_key},
         burn_output::BurnOutput,
         error::BurnError,
         extra_commitment::ExtraCommitment,
     },
     contracts::network::Network,
-    utils::TryToFr,
+    utils::{ToU256, TryToFr},
 };
 
 pub async fn burn(
@@ -45,7 +45,7 @@ pub async fn burn(
         receiver_hook.clone(),
     );
 
-    let burn_key = new_burn_key();
+    let burn_key = find_burn_key(extra_commitment.hash().unwrap().to_u256(), reveal);
     println!("Your burn_key: `{}`", burn_key);
 
     let burn_address = burn_address(

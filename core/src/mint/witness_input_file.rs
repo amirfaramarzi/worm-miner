@@ -112,7 +112,7 @@ impl WitnessInputFile {
         serde_json::to_string_pretty(self).unwrap()
     }
 
-    pub fn write_to_file(&self, path: PathBuf) -> Result<(), anyhow::Error> {
+    pub fn write_to_file(&self, path: &PathBuf) -> Result<(), anyhow::Error> {
         fs::write(path, self.to_json())?;
         Ok(())
     }
