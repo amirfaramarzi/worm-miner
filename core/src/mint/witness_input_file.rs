@@ -1,7 +1,8 @@
 use std::{fs, path::PathBuf};
 
+use crate::consts::BURN_AMOUNT_LIMIT;
 use alloy::{
-    primitives::{Address, U256, keccak256, utils::parse_ether},
+    primitives::{Address, U256, keccak256},
     rlp::RlpDecodable,
     rpc::types::EIP1186AccountProofResponse,
 };
@@ -81,9 +82,9 @@ impl WitnessInputFile {
 
         // applying 10ETH limit
         let actual_balance = proof.balance;
-        let ten_eth = parse_ether("10").unwrap();
-        let intended_balance = if actual_balance > ten_eth {
-            ten_eth
+
+        let intended_balance = if actual_balance > *BURN_AMOUNT_LIMIT {
+            *BURN_AMOUNT_LIMIT
         } else {
             actual_balance
         };
