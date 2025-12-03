@@ -21,6 +21,7 @@ use crate::{
     contracts::network::Network,
     utils::{ToU256, TryToFr},
 };
+use anyhow::anyhow;
 
 pub async fn burn(
     network: Network,
@@ -45,7 +46,13 @@ pub async fn burn(
         receiver_hook.clone(),
     );
 
-    let burn_key = find_burn_key(extra_commitment.hash().unwrap().to_u256(), reveal);
+    let burn_key = find_burn_key(
+        extra_commitment
+            .hash()
+            .map_err(|e| anyhow!("{e}"))?
+            .to_u256(),
+        reveal,
+    )?;
     println!("Your burn_key: `{}`", burn_key);
 
     let burn_address = burn_address(

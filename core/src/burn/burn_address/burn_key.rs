@@ -5,7 +5,7 @@ use rand::RngCore;
 
 use crate::utils::{ToU256, TryToFr};
 
-pub fn find_burn_key(burn_extra_commit: U256, reveal: U256) -> Fr {
+pub fn find_burn_key(burn_extra_commit: U256, reveal: U256) -> Result<Fr, anyhow::Error> {
     let pow_min_zero_bytes: usize = 2;
     let mut curr: U256 = random_fr().to_u256();
 
@@ -17,7 +17,7 @@ pub fn find_burn_key(burn_extra_commit: U256, reveal: U256) -> Fr {
         inp[96..].copy_from_slice(b"EIP-7503");
         let hash: U256 = keccak256(inp).into();
         if hash.leading_zeros() >= pow_min_zero_bytes * 8 {
-            return curr.try_to_fr().unwrap();
+            return Ok(curr.try_to_fr()?);
         }
         curr += U256::ONE;
     }

@@ -68,7 +68,7 @@ pub async fn mint(
         block_header,
         burn_output.burn_key,
         burn_output.reveal_amount,
-        burn_extra_commitment.hash().unwrap(),
+        burn_extra_commitment.hash().map_err(|e| anyhow!("{e}"))?,
         prover_address,
     )?;
 
