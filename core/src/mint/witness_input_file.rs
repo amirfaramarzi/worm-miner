@@ -3,8 +3,9 @@ use std::{fs, path::PathBuf};
 use crate::consts::BURN_AMOUNT_LIMIT;
 use alloy::{
     primitives::{Address, U256, keccak256},
+    rlp::Encodable,
     rlp::RlpDecodable,
-    rpc::types::EIP1186AccountProofResponse,
+    rpc::types::{Block, EIP1186AccountProofResponse},
 };
 use alloy_rlp::Decodable;
 use anyhow::anyhow;
@@ -40,23 +41,30 @@ pub struct WitnessInputFile {
 impl WitnessInputFile {
     pub fn new(
         proof: EIP1186AccountProofResponse,
-        header_bytes: Vec<u8>,
+        block: Block,
         burn_key: Fr,
         spend: U256,
         burn_extra_commitment: Fr,
         prover: Address,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<Self, WitnessInputFileError> {
+        if !block.header.state_root == keccak256(&proof.account_proof[0]) {
+            return Err(WitnessInputFileError::NotOnSameBlock);
+        }
+
+        let mut header_bytes = vec![];
+        block.header.inner.encode(&mut header_bytes);
+
         let leaf = proof
             .account_proof
             .last()
             .ok_or(anyhow!("Leaf doesn't exist!"))?;
-        let rlp_leaf = RlpLeaf::decode(&mut leaf.as_ref())?;
+        let rlp_leaf = RlpLeaf::decode(&mut leaf.as_ref()).map_err(|e| anyhow!("{e}"))?;
         let num_addr_hash_nibbles = if (rlp_leaf.key[0] & 0xf0) == 0x20 {
             2 * rlp_leaf.key.len() - 2
         } else if (rlp_leaf.key[0] & 0xf0) == 0x30 {
             2 * rlp_leaf.key.len() - 1
         } else {
-            return Err(anyhow!("Unexpected leaf-key prefix!"));
+            return Err(anyhow!("Unexpected leaf-key prefix!"))?;
         };
 
         let mut layers = vec![];
@@ -121,4 +129,13 @@ impl WitnessInputFile {
 struct RlpLeaf {
     key: alloy::rlp::Bytes,
     value: alloy::rlp::Bytes,
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum WitnessInputFileError {
+    #[error("proof and block are not in same block")]
+    NotOnSameBlock,
+
+    #[error("unknown error: {0}")]
+    Other(#[from] anyhow::Error),
 }

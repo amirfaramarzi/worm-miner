@@ -3,15 +3,17 @@ pub mod proof_generator;
 pub mod witness_generator;
 pub mod witness_input_file;
 
-use alloy::{primitives::Address, rlp::Encodable, signers::local::PrivateKeySigner};
+use alloy::{primitives::Address, signers::local::PrivateKeySigner};
 
 use crate::{
     burn::{
         burn_address::burn_address, burn_output::BurnOutput, extra_commitment::ExtraCommitment,
     },
     mint::{
-        error::MintError, proof_generator::generate_proof, witness_generator::generate_witness,
-        witness_input_file::WitnessInputFile,
+        error::MintError,
+        proof_generator::generate_proof,
+        witness_generator::generate_witness,
+        witness_input_file::{WitnessInputFile, WitnessInputFileError},
     },
     utils::TryToFr,
 };
@@ -50,27 +52,30 @@ pub async fn mint(
         .await?;
 
     // making sure that proof and block_header are pointing to same block
-    let (block_header, proof) = loop {
+    let witness_input_file = loop {
         let block = provider
             .get_block(BlockId::latest())
             .await?
             .ok_or(anyhow!("block not found"))?;
         let proof = provider.get_proof(burn_address, vec![]).await?;
-        if block.header.state_root == keccak256(&proof.account_proof[0]) {
-            let mut block_header = vec![];
-            block.header.inner.encode(&mut block_header);
-            break (block_header, proof);
+
+        let result = WitnessInputFile::new(
+            proof,
+            block,
+            burn_output.burn_key,
+            burn_output.reveal_amount,
+            burn_extra_commitment.hash().map_err(|e| anyhow!("{e}"))?,
+            prover_address,
+        );
+        match result {
+            // retry to get proof and block again
+            Err(WitnessInputFileError::NotOnSameBlock) => continue,
+            // unrecoverable error
+            Err(WitnessInputFileError::Other(e)) => return Err(e)?,
+            // actual valid witness_file
+            Ok(x) => break x,
         }
     };
-
-    let witness_input_file = WitnessInputFile::new(
-        proof,
-        block_header,
-        burn_output.burn_key,
-        burn_output.reveal_amount,
-        burn_extra_commitment.hash().map_err(|e| anyhow!("{e}"))?,
-        prover_address,
-    )?;
 
     println!("Generating witness...");
     let witness_file = generate_witness(witness_input_file, burn_address)?;
