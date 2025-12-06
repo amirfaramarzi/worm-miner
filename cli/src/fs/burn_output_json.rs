@@ -10,6 +10,7 @@ use std::str::FromStr;
 pub struct BurnOutputJson {
     pub network: String,
     pub burn_key: String,
+    pub burn_amount: String,
     pub reveal_amount: String,
     pub receiver: String,
     pub prover_fee: String,
@@ -32,6 +33,7 @@ impl From<BurnOutput> for BurnOutputJson {
         BurnOutputJson {
             network: value.network.to_string(),
             burn_key: value.burn_key.to_string(),
+            burn_amount: value.burn_amount.to_string(),
             reveal_amount: value.reveal_amount.to_string(),
             receiver: value.receiver.to_string(),
             prover_fee: value.prover_fee.to_string(),
@@ -50,6 +52,7 @@ impl TryFrom<BurnOutputJson> for BurnOutput {
                 BigInt::from_str(&value.burn_key).map_err(|_| anyhow!("burn_key bigint parse"))?,
             )
             .ok_or(anyhow!("burn_key Fr parse"))?,
+            U256::from_str_radix(&value.burn_amount, 10)?,
             U256::from_str_radix(&value.reveal_amount, 10)?,
             Address::from_str(&value.receiver)?,
             U256::from_str_radix(&value.prover_fee, 10)?,
