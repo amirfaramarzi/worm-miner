@@ -82,6 +82,7 @@ pub async fn burn(
         BurnOutput::new(
             network,
             burn_key,
+            amount,
             reveal,
             receiver_address,
             prover_fee,

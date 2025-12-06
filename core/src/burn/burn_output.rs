@@ -11,6 +11,7 @@ pub struct BurnOutput {
     pub burn_key: Fr, // Save as string because it's a pretty large number
 
     // Burn_address 3rd param
+    pub burn_amount: U256, // Save as string because it's a pretty large number
     pub reveal_amount: U256, // Save as string because it's a pretty large number
 
     // Extra commitment content
@@ -24,6 +25,7 @@ impl BurnOutput {
     pub fn new(
         network: Network,
         burn_key: Fr,
+        burn_amount: U256,
         reveal_amount: U256,
         receiver: Address,
         prover_fee: U256,
@@ -33,6 +35,7 @@ impl BurnOutput {
         Self {
             network,
             burn_key,
+            burn_amount,
             reveal_amount,
             receiver,
             prover_fee,
