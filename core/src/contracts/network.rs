@@ -1,6 +1,7 @@
+use alloy::primitives::Address;
 use anyhow::anyhow;
 use clap::ValueEnum;
-use std::{env, fmt::Display};
+use std::{env, fmt::Display, str::FromStr};
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum)]
 pub enum Network {
@@ -48,13 +49,15 @@ impl Network {
     }
 
     //TODO
-    pub fn beth_address(&self) -> String {
+    pub fn beth_address(&self) -> Address {
         match self {
             Network::Anvil => {
-                env::var("ANVIL_BETH_ADDRESS").expect("provide ANVIL_BETH_ADDRESS env variable")
+                let s = env::var("ANVIL_BETH_ADDRESS")
+                    .expect("provide ANVIL_BETH_ADDRESS env variable");
+                Address::from_str(&s).unwrap()
             }
-            Network::Sepolia => "".to_string(),
-            Network::Mainnet => "".to_string(),
+            Network::Sepolia => Address::from_str("todo").unwrap(),
+            Network::Mainnet => Address::from_str("todo").unwrap(),
         }
     }
 

@@ -1,25 +1,32 @@
 pub mod error;
+pub mod nullifier;
 pub mod proof_generator;
+pub mod remaining_coin_hash;
 pub mod witness_generator;
 pub mod witness_input_file;
 
-use alloy::{primitives::Address, signers::local::PrivateKeySigner};
+use alloy::{
+    primitives::{Address, Bytes, U256},
+    signers::local::PrivateKeySigner,
+};
 
 use crate::{
     burn::{
         burn_address::burn_address, burn_output::BurnOutput, extra_commitment::ExtraCommitment,
     },
+    contracts::beth::BETHContract,
     mint::{
         error::MintError,
+        nullifier::compute_nullifier,
         proof_generator::generate_proof,
+        remaining_coin_hash::compute_remaining_coin,
         witness_generator::generate_witness,
         witness_input_file::{WitnessInputFile, WitnessInputFileError},
     },
-    utils::TryToFr,
+    utils::{ToU256, TryToFr},
 };
 use alloy::{
     eips::BlockId,
-    primitives::keccak256,
     providers::{Provider, ProviderBuilder},
 };
 use anyhow::anyhow;
@@ -52,11 +59,12 @@ pub async fn mint(
         .await?;
 
     // making sure that proof and block_header are pointing to same block
-    let witness_input_file = loop {
+    let (witness_input_file, block_number) = loop {
         let block = provider
             .get_block(BlockId::latest())
             .await?
             .ok_or(anyhow!("block not found"))?;
+        let block_number = block.number();
         let proof = provider.get_proof(burn_address, vec![]).await?;
 
         let result = WitnessInputFile::new(
@@ -73,7 +81,7 @@ pub async fn mint(
             // unrecoverable error
             Err(WitnessInputFileError::Other(e)) => return Err(e)?,
             // actual valid witness_file
-            Ok(x) => break x,
+            Ok(x) => break (x, block_number),
         }
     };
 
@@ -84,6 +92,29 @@ pub async fn mint(
     let proof = generate_proof(witness_file)?;
 
     println!("Proof:\n{}", proof.to_json());
+
+    let nullifier = compute_nullifier(burn_output.burn_key)?;
+    let remaining_coin = compute_remaining_coin(
+        burn_output.burn_key,
+        burn_output.burn_amount,
+        burn_output.reveal_amount,
+    )?;
+
+    let beth = BETHContract::new(burn_output.network, signer).await?;
+
+    beth.mint(
+        proof,
+        U256::from(block_number),
+        nullifier.to_u256(),
+        remaining_coin.to_u256(),
+        burn_output.broadcaster_fee,
+        burn_output.reveal_amount,
+        burn_output.receiver,
+        burn_output.prover_fee,
+        prover_address,
+        Bytes::new(), // TODO
+    )
+    .await?;
 
     todo!()
 }
