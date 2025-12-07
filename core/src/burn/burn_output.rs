@@ -1,14 +1,13 @@
-use alloy::primitives::{Address, Bytes, U256};
-use ark_bn254::Fr;
-
 use crate::contracts::network::Network;
+use alloy::primitives::{Address, Bytes, U256};
 
+#[derive(serde::Deserialize, serde::Serialize)]
 pub struct BurnOutput {
     // So we don't need to get it from user again on burn
     pub network: Network,
 
     // Burn_address 2nd param
-    pub burn_key: Fr, // Save as string because it's a pretty large number
+    pub burn_key: U256, // Save as string because it's a pretty large number
 
     // Burn_address 3rd param
     pub burn_amount: U256, // Save as string because it's a pretty large number
@@ -24,7 +23,7 @@ pub struct BurnOutput {
 impl BurnOutput {
     pub fn new(
         network: Network,
-        burn_key: Fr,
+        burn_key: U256,
         burn_amount: U256,
         reveal_amount: U256,
         receiver: Address,
@@ -42,5 +41,13 @@ impl BurnOutput {
             broadcaster_fee,
             receiver_hook,
         }
+    }
+
+    pub fn from_json(s: &str) -> Result<Self, anyhow::Error> {
+        Ok(serde_json::from_str(s)?)
+    }
+
+    pub fn to_json(&self) -> Result<String, anyhow::Error> {
+        Ok(serde_json::to_string_pretty(self)?)
     }
 }

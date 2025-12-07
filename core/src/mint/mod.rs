@@ -47,8 +47,13 @@ pub async fn mint(
         burn_output.receiver_hook.clone(),
     );
 
+    let burn_key = burn_output
+        .burn_key
+        .try_to_fr()
+        .map_err(|e| anyhow!("burn_key.try_to_fr() {e}"))?;
+
     let burn_address = burn_address(
-        burn_output.burn_key,
+        burn_key,
         burn_output
             .reveal_amount
             .try_to_fr()
@@ -72,7 +77,7 @@ pub async fn mint(
         let result = WitnessInputFile::new(
             proof,
             block,
-            burn_output.burn_key,
+            burn_key,
             burn_output.reveal_amount,
             burn_extra_commitment.hash().map_err(|e| anyhow!("{e}"))?,
             prover_address,
@@ -95,12 +100,9 @@ pub async fn mint(
 
     println!("Proof:\n{}", proof.to_json());
 
-    let nullifier = compute_nullifier(burn_output.burn_key)?;
-    let remaining_coin = compute_remaining_coin(
-        burn_output.burn_key,
-        burn_output.burn_amount,
-        burn_output.reveal_amount,
-    )?;
+    let nullifier = compute_nullifier(burn_key)?;
+    let remaining_coin =
+        compute_remaining_coin(burn_key, burn_output.burn_amount, burn_output.reveal_amount)?;
 
     let beth = BETHContract::new(burn_output.network, signer).await?;
 
@@ -119,7 +121,7 @@ pub async fn mint(
     .await?;
 
     Ok(NoteJson::new(
-        burn_output.burn_key.to_u256(),
+        burn_output.burn_key,
         burn_output.burn_amount - burn_output.reveal_amount,
         burn_output.network,
     ))

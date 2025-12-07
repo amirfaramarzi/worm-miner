@@ -81,7 +81,7 @@ pub async fn burn(
     Ok((
         BurnOutput::new(
             network,
-            burn_key,
+            burn_key.to_u256(),
             amount,
             reveal,
             receiver_address,

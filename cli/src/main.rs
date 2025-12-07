@@ -1,7 +1,7 @@
 pub mod arg_parser;
 pub mod fs;
 
-use crate::{arg_parser::Args, fs::*};
+use crate::arg_parser::Args;
 use clap::Parser;
 use core::{
     burn::{burn, burn_output::BurnOutput},
@@ -43,7 +43,7 @@ async fn main() {
                     exit(1);
                 }
             };
-            let json = BurnOutputJson::from(out).to_json();
+            let json = out.to_json().expect("burn.json generation failed");
             println!("burn result: {}", json);
 
             let out_file = match out_file {
@@ -74,7 +74,7 @@ async fn main() {
                     exit(1);
                 }
             };
-            let burn_output_json = match BurnOutputJson::from_json(&content) {
+            let burn_output_json = match BurnOutput::from_json(&content) {
                 Ok(x) => x,
                 Err(e) => {
                     println!("{e}");
