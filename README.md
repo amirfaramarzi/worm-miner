@@ -37,6 +37,7 @@ Creates a new note file for the remaining amount (E.g note2.json)
 
 * `--num-epochs`: Participate in N next epochs
 * `--amount-per-epoch`: Put X BETH per epochs
+* `--network`: Optional (Default: `mainnet`)
 
 Creates a participation file: `participate_10_0.1.json`
 

@@ -13,7 +13,6 @@ use std::{path::PathBuf, process::exit, str::FromStr};
 async fn main() {
     let args = Args::parse();
 
-    let network = args.network;
     match args.command {
         arg_parser::Commands::Burn {
             private_key,
@@ -24,6 +23,7 @@ async fn main() {
             receiver_address,
             prover_fee,
             out: out_file,
+            network,
         } => {
             let (out, burn_address) = match burn(
                 network,
@@ -117,6 +117,7 @@ async fn main() {
         arg_parser::Commands::Participate {
             num_epochs: _,
             amount_per_epoch: _,
+            network: _,
         } => todo!(),
         arg_parser::Commands::Claim {
             participate_file: _,
