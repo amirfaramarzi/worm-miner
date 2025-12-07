@@ -94,7 +94,7 @@ async fn main() {
                 core::burn::broadcaster::Broadcaster::EndPoint(url) => todo!(),
                 core::burn::broadcaster::Broadcaster::PrivateKey(local_signer) => {
                     // In self proving mode, prover is actually receiver in case user accidentally sets prover-fee not zero
-                    let prover_address = burn_output.receiver;
+                    let prover_address = burn_output.extra_commitment.receiver;
                     let burn_key = burn_output.burn_key.to_string();
                     let out = match mint(burn_output, prover_address, local_signer).await {
                         Ok(x) => x,

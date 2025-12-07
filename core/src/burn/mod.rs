@@ -60,7 +60,7 @@ pub async fn burn(
         reveal
             .try_to_fr()
             .map_err(|x| Into::<anyhow::Error>::into(x))?,
-        extra_commitment,
+        extra_commitment.clone(),
     )?;
 
     println!("your burn address: `{}`", burn_address);
@@ -84,10 +84,7 @@ pub async fn burn(
             burn_key.to_u256(),
             amount,
             reveal,
-            receiver_address,
-            prover_fee,
-            broadcaster_fee,
-            receiver_hook,
+            extra_commitment,
         ),
         burn_address,
     ))

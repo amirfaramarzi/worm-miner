@@ -12,9 +12,7 @@ use alloy::{
 };
 
 use crate::{
-    burn::{
-        burn_address::burn_address, burn_output::BurnOutput, extra_commitment::ExtraCommitment,
-    },
+    burn::{burn_address::burn_address, burn_output::BurnOutput},
     contracts::beth::BETHContract,
     mint::{
         error::MintError,
@@ -40,12 +38,7 @@ pub async fn mint(
     prover_address: Address,
     signer: PrivateKeySigner,
 ) -> Result<NoteJson, MintError> {
-    let burn_extra_commitment = ExtraCommitment::new(
-        burn_output.receiver,
-        burn_output.prover_fee,
-        burn_output.broadcaster_fee,
-        burn_output.receiver_hook.clone(),
-    );
+    let burn_extra_commitment = burn_output.extra_commitment;
 
     let burn_key = burn_output
         .burn_key
@@ -111,10 +104,10 @@ pub async fn mint(
         U256::from(block_number),
         nullifier.to_u256(),
         remaining_coin.to_u256(),
-        burn_output.broadcaster_fee,
+        burn_extra_commitment.broadcaster_fee,
         burn_output.reveal_amount,
-        burn_output.receiver,
-        burn_output.prover_fee,
+        burn_extra_commitment.receiver,
+        burn_extra_commitment.prover_fee,
         prover_address,
         Bytes::new(), // TODO
     )

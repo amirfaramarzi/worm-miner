@@ -1,5 +1,5 @@
-use crate::contracts::network::Network;
-use alloy::primitives::{Address, Bytes, U256};
+use crate::{burn::extra_commitment::ExtraCommitment, contracts::network::Network};
+use alloy::primitives::U256;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct BurnOutput {
@@ -14,10 +14,7 @@ pub struct BurnOutput {
     pub reveal_amount: U256, // Save as string because it's a pretty large number
 
     // Extra commitment content
-    pub receiver: Address,
-    pub prover_fee: U256,
-    pub broadcaster_fee: U256,
-    pub receiver_hook: Bytes,
+    pub extra_commitment: ExtraCommitment,
 }
 
 impl BurnOutput {
@@ -26,20 +23,14 @@ impl BurnOutput {
         burn_key: U256,
         burn_amount: U256,
         reveal_amount: U256,
-        receiver: Address,
-        prover_fee: U256,
-        broadcaster_fee: U256,
-        receiver_hook: Bytes,
+        extra_commitment: ExtraCommitment,
     ) -> Self {
         Self {
             network,
             burn_key,
             burn_amount,
             reveal_amount,
-            receiver,
-            prover_fee,
-            broadcaster_fee,
-            receiver_hook,
+            extra_commitment,
         }
     }
 
