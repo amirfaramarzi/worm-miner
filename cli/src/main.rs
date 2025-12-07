@@ -95,6 +95,7 @@ async fn main() {
                 core::burn::broadcaster::Broadcaster::PrivateKey(local_signer) => {
                     // In self proving mode, prover is actually receiver in case user accidentally sets prover-fee not zero
                     let prover_address = burn_output.receiver;
+                    let burn_key = burn_output.burn_key.to_string();
                     let out = match mint(burn_output, prover_address, local_signer).await {
                         Ok(x) => x,
                         Err(e) => {
@@ -102,6 +103,10 @@ async fn main() {
                             exit(1)
                         }
                     };
+                    let path = PathBuf::from_str(&format!("./note_{}.json", burn_key))
+                        .expect("can't make note.json path");
+                    std::fs::write(path, out.to_json().expect("can't convert note to json"))
+                        .expect("can't write note.json to file");
                 }
             }
         }

@@ -3,7 +3,9 @@ use anyhow::anyhow;
 use clap::ValueEnum;
 use std::{env, fmt::Display, str::FromStr};
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum)]
+#[derive(
+    Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum, serde::Serialize, serde::Deserialize,
+)]
 pub enum Network {
     Anvil,
     Sepolia,

@@ -1,4 +1,5 @@
 pub mod error;
+pub mod note_json;
 pub mod nullifier;
 pub mod proof_generator;
 pub mod remaining_coin_hash;
@@ -17,6 +18,7 @@ use crate::{
     contracts::beth::BETHContract,
     mint::{
         error::MintError,
+        note_json::NoteJson,
         nullifier::compute_nullifier,
         proof_generator::generate_proof,
         remaining_coin_hash::compute_remaining_coin,
@@ -37,7 +39,7 @@ pub async fn mint(
     burn_output: BurnOutput,
     prover_address: Address,
     signer: PrivateKeySigner,
-) -> Result<(), MintError> {
+) -> Result<NoteJson, MintError> {
     let burn_extra_commitment = ExtraCommitment::new(
         burn_output.receiver,
         burn_output.prover_fee,
@@ -116,5 +118,9 @@ pub async fn mint(
     )
     .await?;
 
-    todo!()
+    Ok(NoteJson::new(
+        burn_output.burn_key.to_u256(),
+        burn_output.burn_amount - burn_output.reveal_amount,
+        burn_output.network,
+    ))
 }
