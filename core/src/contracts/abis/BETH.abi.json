@@ -27,6 +27,19 @@
   },
   {
     "type": "function",
+    "name": "DOMAIN_SEPARATOR",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "MINT_CAP",
     "inputs": [],
     "outputs": [
@@ -120,7 +133,45 @@
   },
   {
     "type": "function",
-    "name": "coins",
+    "name": "coinOwner",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "coinRevealed",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "coinSource",
     "inputs": [
       {
         "name": "",
@@ -152,6 +203,49 @@
   },
   {
     "type": "function",
+    "name": "eip712Domain",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "fields",
+        "type": "bytes1",
+        "internalType": "bytes1"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "version",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "chainId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "verifyingContract",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "salt",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "extensions",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "initRewardPool",
     "inputs": [
       {
@@ -168,69 +262,81 @@
     "name": "mintCoin",
     "inputs": [
       {
-        "name": "_pA",
-        "type": "uint256[2]",
-        "internalType": "uint256[2]"
-      },
-      {
-        "name": "_pB",
-        "type": "uint256[2][2]",
-        "internalType": "uint256[2][2]"
-      },
-      {
-        "name": "_pC",
-        "type": "uint256[2]",
-        "internalType": "uint256[2]"
-      },
-      {
-        "name": "_blockNumber",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_nullifier",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_remainingCoin",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_broadcasterFee",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_revealedAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_revealedAmountReceiver",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "_proverFee",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_prover",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "_receiverPostMintHook",
-        "type": "bytes",
-        "internalType": "bytes"
-      },
-      {
-        "name": "_broadcasterFeePostMintHook",
-        "type": "bytes",
-        "internalType": "bytes"
+        "name": "_mintParams",
+        "type": "tuple",
+        "internalType": "struct BETH.MintParams",
+        "components": [
+          {
+            "name": "pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "blockNumber",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "nullifier",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "remainingCoin",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "broadcasterFee",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "broadcasterFeePostMintHook",
+            "type": "bytes",
+            "internalType": "bytes"
+          },
+          {
+            "name": "proverFee",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "prover",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "proverFeePostMintHook",
+            "type": "bytes",
+            "internalType": "bytes"
+          },
+          {
+            "name": "revealedAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "revealedAmountReceiver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "receiverPostMintHook",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
       }
     ],
     "outputs": [],
@@ -245,6 +351,25 @@
         "name": "",
         "type": "string",
         "internalType": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "nonces",
+    "inputs": [
+      {
+        "name": "owner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -270,6 +395,49 @@
   },
   {
     "type": "function",
+    "name": "permit",
+    "inputs": [
+      {
+        "name": "owner",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "spender",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "value",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "v",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "r",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "s",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "proofOfBurnVerifier",
     "inputs": [],
     "outputs": [
@@ -277,25 +445,6 @@
         "name": "",
         "type": "address",
         "internalType": "contract IVerifier"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "revealed",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -318,44 +467,41 @@
     "name": "spendCoin",
     "inputs": [
       {
-        "name": "_pA",
-        "type": "uint256[2]",
-        "internalType": "uint256[2]"
-      },
-      {
-        "name": "_pB",
-        "type": "uint256[2][2]",
-        "internalType": "uint256[2][2]"
-      },
-      {
-        "name": "_pC",
-        "type": "uint256[2]",
-        "internalType": "uint256[2]"
-      },
-      {
-        "name": "_coin",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_revealedAmount",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_remainingCoin",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_broadcasterFee",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_receiver",
-        "type": "address",
-        "internalType": "address"
+        "name": "_spendParams",
+        "type": "tuple",
+        "internalType": "struct BETH.SpendParams",
+        "components": [
+          {
+            "name": "pA",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "pB",
+            "type": "uint256[2][2]",
+            "internalType": "uint256[2][2]"
+          },
+          {
+            "name": "pC",
+            "type": "uint256[2]",
+            "internalType": "uint256[2]"
+          },
+          {
+            "name": "coin",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "revealedAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "remainingCoin",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
       }
     ],
     "outputs": [],
@@ -480,6 +626,12 @@
   },
   {
     "type": "event",
+    "name": "EIP712DomainChanged",
+    "inputs": [],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "HookFailure",
     "inputs": [
       {
@@ -515,6 +667,33 @@
       }
     ],
     "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "ECDSAInvalidSignature",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ECDSAInvalidSignatureLength",
+    "inputs": [
+      {
+        "name": "length",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ECDSAInvalidSignatureS",
+    "inputs": [
+      {
+        "name": "s",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
   },
   {
     "type": "error",
@@ -604,7 +783,66 @@
   },
   {
     "type": "error",
+    "name": "ERC2612ExpiredSignature",
+    "inputs": [
+      {
+        "name": "deadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC2612InvalidSigner",
+    "inputs": [
+      {
+        "name": "signer",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidAccountNonce",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "currentNonce",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidShortString",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "ReentrancyGuardReentrantCall",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "StringTooLong",
+    "inputs": [
+      {
+        "name": "str",
+        "type": "string",
+        "internalType": "string"
+      }
+    ]
   }
 ]

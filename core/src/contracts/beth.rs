@@ -1,4 +1,7 @@
-use crate::{contracts::network::Network, mint::proof_generator::RapidsnarkOutput};
+use crate::{
+    contracts::{beth::BETH::MintParams, network::Network},
+    mint::proof_generator::RapidsnarkOutput,
+};
 use alloy::{
     network::EthereumWallet,
     primitives::{Address, Bytes, U256},
@@ -44,29 +47,28 @@ impl BETHContract {
         prover: Address,
         swap_calldata: Bytes,
     ) -> Result<TransactionReceipt, anyhow::Error> {
+        let params = MintParams {
+            pA: [proof.proof.pi_a[0], proof.proof.pi_a[1]],
+            pB: [
+                [proof.proof.pi_b[0][1], proof.proof.pi_b[0][0]],
+                [proof.proof.pi_b[1][1], proof.proof.pi_b[1][0]],
+            ],
+            pC: [proof.proof.pi_c[0], proof.proof.pi_c[1]],
+            blockNumber: block_number,
+            nullifier: nullifier,
+            remainingCoin: remaining_coin_hash,
+            broadcasterFee: broadcaster_fee,
+            revealedAmount: spend,
+            revealedAmountReceiver: receiver,
+            proverFee: prover_fee,
+            prover: prover,
+            receiverPostMintHook: swap_calldata,
+            broadcasterFeePostMintHook: Bytes::new(),
+            proverFeePostMintHook: Bytes::new(),
+        };
         let receipt = self
             .instance
-            .mintCoin(
-                // pi_a
-                [proof.proof.pi_a[0], proof.proof.pi_a[1]],
-                // pi_b (flipped coordinates)
-                [
-                    [proof.proof.pi_b[0][1], proof.proof.pi_b[0][0]],
-                    [proof.proof.pi_b[1][1], proof.proof.pi_b[1][0]],
-                ],
-                // pi_c
-                [proof.proof.pi_c[0], proof.proof.pi_c[1]],
-                block_number,
-                nullifier,
-                remaining_coin_hash,
-                broadcaster_fee,
-                spend,
-                receiver,
-                prover_fee,
-                prover,
-                swap_calldata,
-                Bytes::new(),
-            )
+            .mintCoin(params)
             .send()
             .await?
             .get_receipt()
