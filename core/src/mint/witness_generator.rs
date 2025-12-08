@@ -9,10 +9,12 @@ pub fn generate_witness(
     burn_address: Address,
 ) -> Result<PathBuf, anyhow::Error> {
     // random file name in temp
-    let input_json_path = std::env::temp_dir().join(format!("{}.json", burn_address.to_string()));
+    let input_json_path =
+        std::env::temp_dir().join(format!("witness_input_{}.json", burn_address.to_string()));
     witness_input_file.write_to_file(&input_json_path)?;
 
-    let witness_file_path = std::env::current_dir()?.join("./witness.wtns");
+    let witness_file_path =
+        std::env::current_dir()?.join(format!("./witness_{}.wtns", burn_address));
 
     let proof_of_burn_dat = worm_home::get_proof_of_burn_dat()?;
     worm_witness_gens::generate_proof_of_burn_witness_file(
