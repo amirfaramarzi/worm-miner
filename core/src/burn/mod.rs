@@ -59,7 +59,7 @@ pub async fn burn(
         burn_key,
         reveal
             .try_to_fr()
-            .map_err(|x| Into::<anyhow::Error>::into(x))?,
+            .map_err(Into::<anyhow::Error>::into)?,
         extra_commitment.clone(),
     )?;
 

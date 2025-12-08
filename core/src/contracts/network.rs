@@ -6,9 +6,11 @@ use std::{env, fmt::Display, str::FromStr};
 #[derive(
     Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum, serde::Serialize, serde::Deserialize,
 )]
+#[derive(Default)]
 pub enum Network {
     Anvil,
     Sepolia,
+    #[default]
     Mainnet,
 }
 
@@ -35,11 +37,6 @@ impl Display for Network {
     }
 }
 
-impl Default for Network {
-    fn default() -> Self {
-        Network::Mainnet
-    }
-}
 
 impl Network {
     pub fn url(&self) -> &'static str {

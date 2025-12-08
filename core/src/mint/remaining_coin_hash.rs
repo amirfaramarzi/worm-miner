@@ -13,5 +13,5 @@ pub fn compute_remaining_coin(
         return Err(anyhow!("Spend amount must be <= amount"));
     }
     let remaining_coin = (amount - spend).try_to_fr()?;
-    Ok(poseidon3(coin_prefix(), burn_key, remaining_coin)?)
+    poseidon3(coin_prefix(), burn_key, remaining_coin)
 }

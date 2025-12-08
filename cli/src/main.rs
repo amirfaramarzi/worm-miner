@@ -74,15 +74,7 @@ async fn main() {
                     exit(1);
                 }
             };
-            let burn_output_json = match BurnOutput::from_json(&content) {
-                Ok(x) => x,
-                Err(e) => {
-                    println!("{e}");
-                    exit(1);
-                }
-            };
-
-            let burn_output = match BurnOutput::try_from(burn_output_json) {
+            let burn_output = match BurnOutput::from_json(&content) {
                 Ok(x) => x,
                 Err(e) => {
                     println!("{e}");
@@ -91,7 +83,7 @@ async fn main() {
             };
             match broadcaster {
                 // TODO send request to a third party prover
-                core::burn::broadcaster::Broadcaster::EndPoint(url) => todo!(),
+                core::burn::broadcaster::Broadcaster::EndPoint(_url) => todo!(),
                 core::burn::broadcaster::Broadcaster::PrivateKey(local_signer) => {
                     // In self proving mode, prover is actually receiver in case user accidentally sets prover-fee not zero
                     let prover_address = burn_output.extra_commitment.receiver;
