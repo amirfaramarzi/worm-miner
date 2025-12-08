@@ -9,7 +9,6 @@ use alloy::{
     rpc::types::TransactionReceipt,
     signers::local::PrivateKeySigner,
     sol,
-    transports::TransportError,
 };
 
 sol!(
@@ -24,13 +23,13 @@ pub struct BETHContract {
 }
 
 impl BETHContract {
-    pub async fn new(network: Network, signer: PrivateKeySigner) -> Result<Self, TransportError> {
+    pub async fn new(network: Network, signer: PrivateKeySigner) -> Result<Self, anyhow::Error> {
         let provider = ProviderBuilder::new()
             .wallet(signer)
             .connect(network.url())
             .await?;
         Ok(BETHContract {
-            instance: BETH::new(network.beth_address(), provider),
+            instance: BETH::new(network.beth_address()?, provider),
         })
     }
 

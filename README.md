@@ -47,6 +47,8 @@ Creates a participation file: `participate_10_0.1.json`
 
 Claim all input participations.
 
+Note: to use anvil network you should provide `ANVIL_BETH_ADDRESS` `ANVIL_WORM_ADDRESS` and `ANVIL_STAKING_ADDRESS` env variables if needed
+
 ## Relay
 
 Spins up a HTTP server, generates proofs and broadcasts them on behalf of others.

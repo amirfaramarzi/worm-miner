@@ -51,36 +51,45 @@ impl Network {
     }
 
     //TODO
-    pub fn beth_address(&self) -> Address {
-        match self {
+    pub fn beth_address(&self) -> Result<Address, anyhow::Error> {
+        let address_str = match self {
             Network::Anvil => {
-                let s = env::var("ANVIL_BETH_ADDRESS")
-                    .expect("provide ANVIL_BETH_ADDRESS env variable");
-                Address::from_str(&s).unwrap()
+                env::var("ANVIL_BETH_ADDRESS").expect("provide ANVIL_BETH_ADDRESS env variable")
             }
-            Network::Sepolia => Address::from_str("todo").unwrap(),
-            Network::Mainnet => Address::from_str("todo").unwrap(),
-        }
+            Network::Sepolia => "todo".to_string(),
+            Network::Mainnet => "todo".to_string(),
+        };
+        Address::from_str(&address_str)
+            .map_err(|e| anyhow!("invalid beth contract address {}, msg: {}", address_str, e))
     }
 
     //TODO
-    pub fn worm_address(&self) -> String {
-        match self {
+    pub fn worm_address(&self) -> Result<Address, anyhow::Error> {
+        let address_str = match self {
             Network::Anvil => {
                 env::var("ANVIL_WORM_ADDRESS").expect("provide ANVIL_WORM_ADDRESS env variable")
             }
-            Network::Sepolia => "".to_string(),
-            Network::Mainnet => "".to_string(),
-        }
+            Network::Sepolia => "todo".to_string(),
+            Network::Mainnet => "todo".to_string(),
+        };
+        Address::from_str(&address_str)
+            .map_err(|e| anyhow!("invalid worm contract address {}, msg: {}", address_str, e))
     }
 
     //TODO
-    pub fn staking_address(&self) -> String {
-        match self {
+    pub fn staking_address(&self) -> Result<Address, anyhow::Error> {
+        let address_str = match self {
             Network::Anvil => env::var("ANVIL_STAKING_ADDRESS")
                 .expect("provide ANVIL_STAKING_ADDRESS env variable"),
-            Network::Sepolia => "".to_string(),
-            Network::Mainnet => "".to_string(),
-        }
+            Network::Sepolia => "todo".to_string(),
+            Network::Mainnet => "todo".to_string(),
+        };
+        Address::from_str(&address_str).map_err(|e| {
+            anyhow!(
+                "invalid staking contract address {}, msg: {}",
+                address_str,
+                e
+            )
+        })
     }
 }
