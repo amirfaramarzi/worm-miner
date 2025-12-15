@@ -1,10 +1,14 @@
+use crate::{
+    contracts::{beth::BETH::MintParams, network::Network},
+    mint::proof_generator::RapidsnarkOutput,
+};
 use alloy::{
     network::EthereumWallet,
-    primitives::Address,
+    primitives::{Address, Bytes, U256},
     providers::{ProviderBuilder, RootProvider, fillers::*},
+    rpc::types::TransactionReceipt,
     signers::local::PrivateKeySigner,
     sol,
-    transports::TransportError,
 };
 
 sol!(
@@ -19,18 +23,56 @@ pub struct BETHContract {
 }
 
 impl BETHContract {
-    pub async fn new(
-        rpc_url: &str,
-        address: Address,
-        signer: PrivateKeySigner,
-    ) -> Result<Self, TransportError> {
+    pub async fn new(network: Network, signer: PrivateKeySigner) -> Result<Self, anyhow::Error> {
         let provider = ProviderBuilder::new()
             .wallet(signer)
-            .connect(rpc_url)
+            .connect(network.url())
             .await?;
         Ok(BETHContract {
-            instance: BETH::new(address, provider),
+            instance: BETH::new(network.beth_address()?, provider),
         })
+    }
+
+    pub async fn mint(
+        &self,
+        proof: RapidsnarkOutput,
+        block_number: U256,
+        nullifier: U256,
+        remaining_coin_hash: U256,
+        broadcaster_fee: U256,
+        spend: U256,
+        receiver: Address,
+        prover_fee: U256,
+        prover: Address,
+        swap_calldata: Bytes,
+    ) -> Result<TransactionReceipt, anyhow::Error> {
+        let params = MintParams {
+            pA: [proof.proof.pi_a[0], proof.proof.pi_a[1]],
+            pB: [
+                [proof.proof.pi_b[0][1], proof.proof.pi_b[0][0]],
+                [proof.proof.pi_b[1][1], proof.proof.pi_b[1][0]],
+            ],
+            pC: [proof.proof.pi_c[0], proof.proof.pi_c[1]],
+            blockNumber: block_number,
+            nullifier,
+            remainingCoin: remaining_coin_hash,
+            broadcasterFee: broadcaster_fee,
+            revealedAmount: spend,
+            revealedAmountReceiver: receiver,
+            proverFee: prover_fee,
+            prover,
+            receiverPostMintHook: swap_calldata,
+            broadcasterFeePostMintHook: Bytes::new(),
+            proverFeePostMintHook: Bytes::new(),
+        };
+        let receipt = self
+            .instance
+            .mintCoin(params)
+            .send()
+            .await?
+            .get_receipt()
+            .await?;
+        Ok(receipt)
     }
 }
 

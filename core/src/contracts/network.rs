@@ -1,11 +1,16 @@
+use alloy::primitives::Address;
 use anyhow::anyhow;
 use clap::ValueEnum;
-use std::{env, fmt::Display};
+use std::{env, fmt::Display, str::FromStr};
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum)]
+#[derive(
+    Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum, serde::Serialize, serde::Deserialize,
+)]
+#[derive(Default)]
 pub enum Network {
     Anvil,
     Sepolia,
+    #[default]
     Mainnet,
 }
 
@@ -32,11 +37,6 @@ impl Display for Network {
     }
 }
 
-impl Default for Network {
-    fn default() -> Self {
-        Network::Mainnet
-    }
-}
 
 impl Network {
     pub fn url(&self) -> &'static str {
@@ -48,34 +48,45 @@ impl Network {
     }
 
     //TODO
-    pub fn beth_address(&self) -> String {
-        match self {
+    pub fn beth_address(&self) -> Result<Address, anyhow::Error> {
+        let address_str = match self {
             Network::Anvil => {
                 env::var("ANVIL_BETH_ADDRESS").expect("provide ANVIL_BETH_ADDRESS env variable")
             }
-            Network::Sepolia => "".to_string(),
-            Network::Mainnet => "".to_string(),
-        }
+            Network::Sepolia => "todo".to_string(),
+            Network::Mainnet => "todo".to_string(),
+        };
+        Address::from_str(&address_str)
+            .map_err(|e| anyhow!("invalid beth contract address {}, msg: {}", address_str, e))
     }
 
     //TODO
-    pub fn worm_address(&self) -> String {
-        match self {
+    pub fn worm_address(&self) -> Result<Address, anyhow::Error> {
+        let address_str = match self {
             Network::Anvil => {
                 env::var("ANVIL_WORM_ADDRESS").expect("provide ANVIL_WORM_ADDRESS env variable")
             }
-            Network::Sepolia => "".to_string(),
-            Network::Mainnet => "".to_string(),
-        }
+            Network::Sepolia => "todo".to_string(),
+            Network::Mainnet => "todo".to_string(),
+        };
+        Address::from_str(&address_str)
+            .map_err(|e| anyhow!("invalid worm contract address {}, msg: {}", address_str, e))
     }
 
     //TODO
-    pub fn staking_address(&self) -> String {
-        match self {
+    pub fn staking_address(&self) -> Result<Address, anyhow::Error> {
+        let address_str = match self {
             Network::Anvil => env::var("ANVIL_STAKING_ADDRESS")
                 .expect("provide ANVIL_STAKING_ADDRESS env variable"),
-            Network::Sepolia => "".to_string(),
-            Network::Mainnet => "".to_string(),
-        }
+            Network::Sepolia => "todo".to_string(),
+            Network::Mainnet => "todo".to_string(),
+        };
+        Address::from_str(&address_str).map_err(|e| {
+            anyhow!(
+                "invalid staking contract address {}, msg: {}",
+                address_str,
+                e
+            )
+        })
     }
 }

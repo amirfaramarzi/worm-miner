@@ -12,9 +12,6 @@ use std::{path::PathBuf, str::FromStr};
 pub struct Args {
     #[command(subcommand)]
     pub command: Commands,
-
-    #[arg(long, default_value_t = Network::Mainnet, value_enum)]
-    pub network: Network,
 }
 
 #[derive(Subcommand, Debug)]
@@ -49,15 +46,22 @@ pub enum Commands {
         prover_fee: U256,
 
         /// output file
-        #[arg(long, default_value_t = { String::from("./burn.json") })]
-        out: String,
+        #[arg(long)]
+        out: Option<PathBuf>,
+
+        #[arg(long, default_value_t = Network::Mainnet, value_enum)]
+        network: Network,
     },
 
     /// In case the proving/minting fails along the way, you can recover
-    Recover {
+    Mint {
         /// Json file (ex: burn.json)
         #[arg(long)]
-        file: PathBuf,
+        file: String,
+
+        /// Json file (ex: burn.json)
+        #[arg(long, value_parser = broadcaster_parser)]
+        broadcaster: Broadcaster,
     },
 
     /// Creates a new note file for the remaining amount (E.g note2.json)
@@ -80,6 +84,9 @@ pub enum Commands {
         /// How much you want to put in each epoch
         #[arg(long, value_parser = eth_amount_parser)]
         amount_per_epoch: U256,
+
+        #[arg(long, default_value_t = Network::Mainnet, value_enum)]
+        network: Network,
     },
 
     /// Claim Worm form finished epoch

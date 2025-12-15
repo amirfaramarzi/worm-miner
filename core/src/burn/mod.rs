@@ -3,7 +3,6 @@ pub mod burn_address;
 pub mod burn_output;
 pub mod error;
 pub mod extra_commitment;
-pub mod poseidon4;
 
 use alloy::{
     primitives::*,
@@ -14,14 +13,15 @@ use alloy::{
 
 use crate::{
     burn::{
-        burn_address::{burn_address, burn_key::new_burn_key},
+        burn_address::{burn_address, burn_key::find_burn_key},
         burn_output::BurnOutput,
         error::BurnError,
         extra_commitment::ExtraCommitment,
     },
     contracts::network::Network,
-    utils::TryToFr,
+    utils::{ToU256, TryToFr},
 };
+use anyhow::anyhow;
 
 pub async fn burn(
     network: Network,
@@ -32,7 +32,7 @@ pub async fn burn(
     sell_on_uniswap: U256,
     receiver_address: Address,
     prover_fee: U256,
-) -> Result<BurnOutput, BurnError> {
+) -> Result<(BurnOutput, Address), BurnError> {
     let receiver_hook = if sell_on_uniswap == 0 {
         Bytes::new()
     } else {
@@ -46,15 +46,21 @@ pub async fn burn(
         receiver_hook.clone(),
     );
 
-    let burn_key = new_burn_key();
+    let burn_key = find_burn_key(
+        extra_commitment
+            .hash()
+            .map_err(|e| anyhow!("{e}"))?
+            .to_u256(),
+        reveal,
+    )?;
     println!("Your burn_key: `{}`", burn_key);
 
     let burn_address = burn_address(
         burn_key,
         reveal
             .try_to_fr()
-            .map_err(|x| Into::<anyhow::Error>::into(x))?,
-        extra_commitment,
+            .map_err(Into::<anyhow::Error>::into)?,
+        extra_commitment.clone(),
     )?;
 
     println!("your burn address: `{}`", burn_address);
@@ -72,13 +78,14 @@ pub async fn burn(
     let receipt = pending.get_receipt().await?;
     println!("receipt:\n{:?}", receipt);
 
-    Ok(BurnOutput::new(
-        network,
-        burn_key,
-        reveal,
-        receiver_address,
-        prover_fee,
-        broadcaster_fee,
-        receiver_hook,
+    Ok((
+        BurnOutput::new(
+            network,
+            burn_key.to_u256(),
+            amount,
+            reveal,
+            extra_commitment,
+        ),
+        burn_address,
     ))
 }

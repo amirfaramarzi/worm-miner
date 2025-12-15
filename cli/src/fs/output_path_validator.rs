@@ -31,5 +31,5 @@ pub fn validate_output_file(user_input: impl AsRef<str>) -> Result<PathBuf, Stri
         ));
     }
 
-    return Ok(path);
+    Ok(path)
 }

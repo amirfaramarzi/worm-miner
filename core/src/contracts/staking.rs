@@ -1,11 +1,11 @@
 use alloy::{
     network::EthereumWallet,
-    primitives::Address,
     providers::{ProviderBuilder, RootProvider, fillers::*},
     signers::local::PrivateKeySigner,
     sol,
-    transports::TransportError,
 };
+
+use crate::contracts::network::Network;
 
 sol!(
     #[allow(missing_docs)]
@@ -19,17 +19,13 @@ pub struct StakingContract {
 }
 
 impl StakingContract {
-    pub async fn new(
-        rpc_url: &str,
-        address: Address,
-        signer: PrivateKeySigner,
-    ) -> Result<Self, TransportError> {
+    pub async fn new(network: Network, signer: PrivateKeySigner) -> Result<Self, anyhow::Error> {
         let provider = ProviderBuilder::new()
             .wallet(signer)
-            .connect(rpc_url)
+            .connect(network.url())
             .await?;
         Ok(StakingContract {
-            instance: Staking::new(address, provider),
+            instance: Staking::new(network.staking_address()?, provider),
         })
     }
 }

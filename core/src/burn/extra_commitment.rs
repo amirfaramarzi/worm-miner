@@ -3,9 +3,11 @@ use alloy::{
     sol_types::SolValue,
 };
 use ark_bn254::Fr;
+use serde::{Deserialize, Serialize};
 
 use crate::utils::*;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ExtraCommitment {
     pub receiver: Address,
     pub prover_fee: U256,
