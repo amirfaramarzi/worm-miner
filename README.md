@@ -24,7 +24,6 @@ Minting BETH
 
 * `--broadcaster`: Required (It can be a http endpoint `https://relayer.worm.cx/relay` (If we want someone else to broadcast for us, see the Relay section) or a private key `0x...` (If we want to broadcast ourself with another private key))
 
-
 ## Spend
 
 `worm-miner spend --note note.json --amount 0.1`
@@ -45,7 +44,7 @@ Creates a participation file: `participate_10_0.1.json`
 
 `worm-miner [COMMON OPTS] claim participate_*.json`
 
-Claim all input participations.
+Claim all input participation.
 
 Note: to use anvil network you should provide `ANVIL_BETH_ADDRESS` `ANVIL_WORM_ADDRESS` and `ANVIL_STAKING_ADDRESS` env variables if needed
 
@@ -55,6 +54,6 @@ Spins up a HTTP server, generates proofs and broadcasts them on behalf of others
 
 * GET `/proof` returns minimum proving fee of the relayer.
 * POST `/proof` gets inputs of the proof-of-burn zk circuit and starts proving.
-* GET `/proof/{burn-addres}` gets cached proof for the given burn-address.
+* GET `/proof/{burn-address}` gets cached proof for the given burn-address.
 * GET `/relay` returns minimum broadcasting fee of the relayer
 * POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
