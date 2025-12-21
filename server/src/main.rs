@@ -15,7 +15,7 @@ use crate::{
 async fn main() {
     let config = Config::load().expect("error file loading config file");
     let port = config.port;
-    println!("Server config:\n{}", config.to_json().unwrap());
+    config.print();
     let state = AppState::new(config);
 
     let router = Router::new()

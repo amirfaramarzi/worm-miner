@@ -1,3 +1,4 @@
+use alloy::primitives::utils::format_ether;
 use alloy::primitives::{U256, utils::parse_ether};
 use core::utils::ether_amount_serializer;
 use core::utils::worm_home;
@@ -35,6 +36,28 @@ impl Config {
 
     pub fn to_json(&self) -> Result<String, anyhow::Error> {
         Ok(serde_json::to_string_pretty(self)?)
+    }
+
+    pub fn print(&self) {
+        // this prevent user confusion by specifying units (ETH)
+        println!(
+            "\n--- Loading config from `{}` ",
+            worm_home::get_config().unwrap().to_str().unwrap()
+        );
+        println!(
+            "min_prover_fee      = {} ETH",
+            format_ether(self.min_prover_fee)
+                .trim_end_matches('0')
+                .trim_end_matches('.')
+        );
+        println!(
+            "min_broadcaster_fee = {} ETH",
+            format_ether(self.min_broadcaster_fee)
+                .trim_end_matches('0')
+                .trim_end_matches('.')
+        );
+        println!("port                = {}", self.port);
+        println!()
     }
 }
 
