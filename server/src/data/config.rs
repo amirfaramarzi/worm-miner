@@ -1,12 +1,14 @@
-use core::utils::worm_home;
-use std::fs;
-
 use alloy::primitives::{U256, utils::parse_ether};
+use core::utils::ether_amount_serializer;
+use core::utils::worm_home;
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
+    #[serde(with = "ether_amount_serializer")]
     pub min_prover_fee: U256,
+    #[serde(with = "ether_amount_serializer")]
     pub min_broadcaster_fee: U256,
     pub port: u16,
 }
