@@ -6,11 +6,17 @@ use axum::{
     routing::{get, post},
 };
 
-use crate::{data::AppState, handlers::*};
+use crate::{
+    data::{AppState, config::Config},
+    handlers::*,
+};
 
 #[tokio::main]
 async fn main() {
-    let state = AppState::new();
+    let config = Config::load().expect("error file loading config file");
+    let port = config.port;
+    println!("Server config:\n{}", config.to_json().unwrap());
+    let state = AppState::new(config);
 
     let router = Router::new()
         .route("/proof", get(proof_get))
@@ -20,6 +26,8 @@ async fn main() {
         .route("/relay", post(relay_post))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let address = format!("0.0.0.0:{}", port);
+    let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
+    println!("Listening on `{}`", address);
     axum::serve(listener, router).await.unwrap();
 }

@@ -1,13 +1,14 @@
+pub mod config;
+
+use crate::data::config::Config;
 use std::sync::{Arc, RwLock};
 
 pub struct AppState {
-    pub min_broadcast_fee: u128,
+    pub config: Config,
 }
 
 impl AppState {
-    pub fn new() -> Arc<RwLock<AppState>> {
-        Arc::new(RwLock::new(AppState {
-            min_broadcast_fee: 1,
-        }))
+    pub fn new(config: Config) -> Arc<RwLock<AppState>> {
+        Arc::new(RwLock::new(AppState { config }))
     }
 }

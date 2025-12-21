@@ -1,0 +1,47 @@
+use core::utils::worm_home;
+use std::fs;
+
+use alloy::primitives::{U256, utils::parse_ether};
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Config {
+    pub min_prover_fee: U256,
+    pub min_broadcaster_fee: U256,
+    pub port: u16,
+}
+
+impl Config {
+    pub fn load() -> Result<Config, anyhow::Error> {
+        let path = worm_home::get_config()?;
+        if !path.exists() {
+            println!("server config not exist!");
+            Self::create_default_file()?;
+            println!("server config created at '{}'", path.to_str().unwrap());
+        }
+        Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
+    }
+
+    pub fn save(&self) -> Result<(), anyhow::Error> {
+        fs::write(worm_home::get_config()?, self.to_json()?)?;
+        Ok(())
+    }
+
+    pub fn create_default_file() -> Result<(), anyhow::Error> {
+        Config::default().save()
+    }
+
+    pub fn to_json(&self) -> Result<String, anyhow::Error> {
+        Ok(serde_json::to_string_pretty(self)?)
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            min_prover_fee: parse_ether("0.001").unwrap(),
+            min_broadcaster_fee: parse_ether("0.001").unwrap(),
+            port: 8080,
+        }
+    }
+}

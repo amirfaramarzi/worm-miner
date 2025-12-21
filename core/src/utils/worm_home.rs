@@ -22,3 +22,7 @@ pub fn get_spend_dat() -> Result<PathBuf, anyhow::Error> {
 pub fn get_spend_zkey() -> Result<PathBuf, anyhow::Error> {
     Ok(get_worm_home()?.join("spend.zkey"))
 }
+
+pub fn get_config() -> Result<PathBuf, anyhow::Error> {
+    Ok(get_worm_home()?.join("server_config.json"))
+}
