@@ -1,0 +1,77 @@
+use std::{borrow::Cow, fmt::Display};
+
+use axum::{
+    http::{HeaderMap, StatusCode, header},
+    response::IntoResponse,
+};
+
+#[derive(thiserror::Error, Debug)]
+pub enum ServerError {
+    #[error("Unexpected error: {0}")]
+    Unexpected(#[from] anyhow::Error),
+
+    #[error("Validation error: {0}")]
+    Validation(ValidationError),
+
+    #[error("Not found: sqlx error message: {0}")]
+    NotFound(String),
+
+    #[error("Invalid action: {0}")]
+    InvalidAction(&'static str),
+}
+
+impl ServerError {
+    pub fn validation(
+        what: impl Into<Cow<'static, str>>,
+        value: impl Into<Cow<'static, str>>,
+        why: impl Into<Cow<'static, str>>,
+    ) -> Self {
+        Self::Validation(ValidationError {
+            what: what.into(),
+            value: value.into(),
+            why: why.into(),
+        })
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ValidationError {
+    what: Cow<'static, str>,
+    value: Cow<'static, str>,
+    why: Cow<'static, str>,
+}
+
+impl Display for ValidationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&format!(
+            "invalid {} = '{}', {}",
+            self.what, self.value, self.why
+        ))
+    }
+}
+
+impl IntoResponse for ServerError {
+    fn into_response(self) -> axum::response::Response {
+        let error_message = self.to_string();
+
+        let status = match self {
+            ServerError::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ServerError::Validation(_) => StatusCode::BAD_REQUEST,
+            ServerError::NotFound(_) => StatusCode::NOT_FOUND,
+            ServerError::InvalidAction(_) => StatusCode::FORBIDDEN,
+        };
+
+        let mut headers = HeaderMap::new();
+        headers.insert(header::CONTENT_TYPE, "application/json".parse().unwrap());
+
+        (
+            status,
+            headers,
+            serde_json::json!({
+                "error": error_message,
+            })
+            .to_string(),
+        )
+            .into_response()
+    }
+}

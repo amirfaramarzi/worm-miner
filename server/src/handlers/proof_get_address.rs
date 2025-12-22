@@ -1,4 +1,4 @@
-use crate::data::AppState;
+use crate::{data::AppState, error::ServerError};
 use axum::{
     extract::{Path, State},
     response::IntoResponse,
@@ -9,8 +9,8 @@ use std::sync::{Arc, RwLock};
 pub async fn proof_get_address(
     State(state): State<Arc<RwLock<AppState>>>,
     Path(burn_address): Path<String>,
-) -> ProofGetAddressResponse {
-    println!("burn addresss: `{}`", burn_address);
+) -> Result<ProofGetAddressResponse, ServerError> {
+    println!("burn address: `{}`", burn_address);
     todo!();
 }
 

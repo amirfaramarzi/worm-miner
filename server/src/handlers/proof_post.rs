@@ -1,15 +1,13 @@
-use std::sync::{Arc, RwLock};
-
+use crate::{data::AppState, error::ServerError};
 use axum::{Json, extract::State, response::IntoResponse};
 use serde::Deserialize;
-
-use crate::data::AppState;
+use std::sync::{Arc, RwLock};
 
 /// POST `/proof` gets inputs of the proof-of-burn zk circuit and starts proving.
 pub async fn proof_post(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(body): Json<ProofPostRequest>,
-) -> ProofPostResponse {
+) -> Result<ProofPostResponse, ServerError> {
     todo!();
 }
 
