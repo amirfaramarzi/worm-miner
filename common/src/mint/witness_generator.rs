@@ -9,8 +9,7 @@ pub fn generate_witness(
     burn_address: Address,
 ) -> Result<PathBuf, anyhow::Error> {
     // random file name in temp
-    let input_json_path =
-        std::env::temp_dir().join(format!("witness_input_{}.json", burn_address));
+    let input_json_path = std::env::temp_dir().join(format!("witness_input_{}.json", burn_address));
     witness_input_file.write_to_file(&input_json_path)?;
 
     let witness_file_path =

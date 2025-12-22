@@ -4,9 +4,17 @@ use clap::ValueEnum;
 use std::{env, fmt::Display, str::FromStr};
 
 #[derive(
-    Clone, Copy, Debug, Hash, PartialEq, Eq, ValueEnum, serde::Serialize, serde::Deserialize,
+    Clone,
+    Copy,
+    Debug,
+    Hash,
+    PartialEq,
+    Eq,
+    ValueEnum,
+    serde::Serialize,
+    serde::Deserialize,
+    Default,
 )]
-#[derive(Default)]
 pub enum Network {
     Anvil,
     Sepolia,
@@ -36,7 +44,6 @@ impl Display for Network {
         }
     }
 }
-
 
 impl Network {
     pub fn url(&self) -> &'static str {

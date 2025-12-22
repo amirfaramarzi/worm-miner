@@ -2,6 +2,7 @@ mod data;
 mod error;
 mod handlers;
 
+use alloy::providers::RootProvider;
 use axum::{
     Router,
     routing::{get, post},
@@ -17,7 +18,10 @@ async fn main() {
     let config = Config::load().expect("error file loading config file");
     let port = config.port;
     config.print();
-    let state = AppState::new(config);
+
+    let provider = RootProvider::new_http("https://127.0.0.1:8545".try_into().unwrap());
+
+    let state = AppState::new(config, provider);
 
     let router = Router::new()
         .route("/proof", get(proof_get))

@@ -1,24 +1,16 @@
-use crate::{
-    data::AppState,
-    error::{LogIfError, ServerError},
-};
+use crate::{data::AppState, error::ServerError};
 use alloy::primitives::U256;
-use anyhow::anyhow;
 use axum::{Json, extract::State, response::IntoResponse};
 use common::utils::ether_amount_serializer;
 use serde::Serialize;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 /// GET `/proof` returns minimum proving fee of the relayer.
 pub async fn proof_get(
     State(state): State<Arc<RwLock<AppState>>>,
 ) -> Result<ProofGetResponse, ServerError> {
-    let min_prover_fee = state
-        .read()
-        .map_err(|e| ServerError::Unexpected(anyhow!("{e}")))
-        .log_with_context("get_min_prover_fee")?
-        .config
-        .min_prover_fee;
+    let min_prover_fee = state.read().await.config.min_prover_fee;
 
     Ok(ProofGetResponse { min_prover_fee })
 }

@@ -1,24 +1,16 @@
-use crate::{
-    data::AppState,
-    error::{LogIfError, ServerError},
-};
+use crate::{data::AppState, error::ServerError};
 use alloy::primitives::U256;
-use anyhow::anyhow;
 use axum::{Json, extract::State, response::IntoResponse};
 use common::utils::ether_amount_serializer;
 use serde::Serialize;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 /// GET `/relay` returns minimum broadcasting fee of the relayer
 pub async fn relay_get(
     State(state): State<Arc<RwLock<AppState>>>,
 ) -> Result<RelayGetResponse, ServerError> {
-    let min_broadcaster_fee = state
-        .read()
-        .map_err(|e| ServerError::Unexpected(anyhow!("{e}")))
-        .log_with_context("get_min_broadcaster_fee")?
-        .config
-        .min_broadcaster_fee;
+    let min_broadcaster_fee = state.read().await.config.min_broadcaster_fee;
 
     Ok(RelayGetResponse {
         min_broadcaster_fee,

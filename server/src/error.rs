@@ -1,5 +1,7 @@
-use std::{borrow::Cow, fmt::Display};
+use std::{borrow::Cow, error::Error, fmt::Display};
 
+use alloy::transports::{RpcError, TransportErrorKind};
+use anyhow::anyhow;
 use axum::{
     http::{HeaderMap, StatusCode, header},
     response::IntoResponse,
@@ -7,9 +9,6 @@ use axum::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum ServerError {
-    #[error("Unexpected error: {0}")]
-    Unexpected(#[from] anyhow::Error),
-
     #[error("{0}")]
     Validation(ValidationError),
 
@@ -18,6 +17,18 @@ pub enum ServerError {
 
     #[error("Invalid action: {0}")]
     InvalidAction(&'static str),
+
+    #[error("Unexpected error: {0}")]
+    Unexpected(#[from] Box<dyn Error>),
+
+    #[error("RPC transport error: {0}")]
+    RpcTransport(#[from] RpcError<TransportErrorKind>),
+}
+
+impl From<anyhow::Error> for ServerError {
+    fn from(value: anyhow::Error) -> Self {
+        Self::Unexpected(value.into_boxed_dyn_error())
+    }
 }
 
 impl ServerError {
@@ -62,6 +73,7 @@ impl IntoResponse for ServerError {
             ServerError::Validation(_) => StatusCode::BAD_REQUEST,
             ServerError::NotFound(_) => StatusCode::NOT_FOUND,
             ServerError::InvalidAction(_) => StatusCode::FORBIDDEN,
+            ServerError::RpcTransport(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
         let mut headers = HeaderMap::new();
