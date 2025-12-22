@@ -3,7 +3,7 @@ pub mod fs;
 
 use crate::arg_parser::Args;
 use clap::Parser;
-use core::{
+use common::{
     burn::{burn, burn_output::BurnOutput},
     mint::mint,
 };
@@ -83,8 +83,8 @@ async fn main() {
             };
             match broadcaster {
                 // TODO send request to a third party prover
-                core::burn::broadcaster::Broadcaster::EndPoint(_url) => todo!(),
-                core::burn::broadcaster::Broadcaster::PrivateKey(local_signer) => {
+                common::burn::broadcaster::Broadcaster::EndPoint(_url) => todo!(),
+                common::burn::broadcaster::Broadcaster::PrivateKey(local_signer) => {
                     // In self proving mode, prover is actually receiver in case user accidentally sets prover-fee not zero
                     let prover_address = burn_output.extra_commitment.receiver;
                     let burn_key = burn_output.burn_key.to_string();
