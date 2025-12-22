@@ -57,9 +57,7 @@ pub async fn burn(
 
     let burn_address = burn_address(
         burn_key,
-        reveal
-            .try_to_fr()
-            .map_err(Into::<anyhow::Error>::into)?,
+        reveal.try_to_fr().map_err(Into::<anyhow::Error>::into)?,
         extra_commitment.clone(),
     )?;
 

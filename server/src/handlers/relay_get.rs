@@ -1,6 +1,7 @@
 use crate::{data::AppState, error::ServerError};
 use axum::{extract::State, response::IntoResponse};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 /// GET `/relay` returns minimum broadcasting fee of the relayer
 pub async fn relay_get(
