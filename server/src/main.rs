@@ -22,7 +22,7 @@ async fn main() {
     let router = Router::new()
         .route("/proof", get(proof_get))
         .route("/proof", post(proof_post))
-        .route("/proof/{burn_address}", get(proof_get_address))
+        .route("/proof/{nullifier}", get(proof_get_by_nullifier))
         .route("/relay", get(relay_get))
         .route("/relay", post(relay_post))
         .with_state(state);
