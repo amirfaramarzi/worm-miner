@@ -1,3 +1,4 @@
+use alloy::primitives::Address;
 use alloy::primitives::utils::format_ether;
 use alloy::primitives::{U256, utils::parse_ether};
 use libcore::utils::ether_amount_serializer;
@@ -11,6 +12,7 @@ pub struct Config {
     pub min_prover_fee: U256,
     #[serde(with = "ether_amount_serializer")]
     pub min_broadcaster_fee: U256,
+    pub owner_address: Address,
     pub port: u16,
 }
 
@@ -56,7 +58,14 @@ impl Config {
                 .trim_end_matches('0')
                 .trim_end_matches('.')
         );
+        println!("owner address       = {}", self.owner_address);
         println!("port                = {}", self.port);
+
+        if self.owner_address == Address::ZERO {
+            println!(
+                " --- WARNING!! ---\nowner address is ZERO make sure you change it to you address"
+            )
+        }
         println!()
     }
 }
@@ -67,6 +76,7 @@ impl Default for Config {
             min_prover_fee: parse_ether("0.001").unwrap(),
             min_broadcaster_fee: parse_ether("0.001").unwrap(),
             port: 8080,
+            owner_address: Address::ZERO,
         }
     }
 }
