@@ -13,7 +13,7 @@ pub enum ServerError {
     #[error("Validation error: {0}")]
     Validation(ValidationError),
 
-    #[error("Not found: sqlx error message: {0}")]
+    #[error("Not found: {0}")]
     NotFound(String),
 
     #[error("Invalid action: {0}")]
@@ -73,5 +73,40 @@ impl IntoResponse for ServerError {
             .to_string(),
         )
             .into_response()
+    }
+}
+
+// --- Logging ---
+
+impl ServerError {
+    pub fn log(self) -> Self {
+        println!("error: {self}");
+        self
+    }
+
+    fn log_with_context(self, context: &'static str) -> Self {
+        println!("context: '{context}' error: {self}");
+        self
+    }
+}
+
+pub trait LogIfError {
+    fn log(self) -> Self;
+    fn log_with_context(self, context: &'static str) -> Self;
+}
+
+impl<T> LogIfError for Result<T, ServerError> {
+    fn log(self) -> Self {
+        if let Err(e) = &self {
+            println!("error: {e}");
+        }
+        self
+    }
+
+    fn log_with_context(self, context: &'static str) -> Self {
+        if let Err(e) = &self {
+            println!("context: '{context}' error: {e}");
+        }
+        self
     }
 }
