@@ -1339,7 +1339,7 @@ dependencies = [
  "ark-bn254",
  "ark-ff 0.5.0",
  "clap",
- "core",
+ "libcore",
  "serde",
  "serde_json",
  "tokio",
@@ -1387,25 +1387,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-xid",
-]
-
-[[package]]
-name = "core"
-version = "0.1.0"
-dependencies = [
- "alloy",
- "alloy-rlp",
- "anyhow",
- "ark-bn254",
- "ark-ff 0.5.0",
- "clap",
- "light-poseidon",
- "rand 0.9.2",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror 2.0.17",
- "worm-witness-gens",
 ]
 
 [[package]]
@@ -2478,6 +2459,25 @@ name = "libc"
 version = "0.2.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2874a2af47a2325c2001a6e6fad9b16a53b802102b528163885171cf92b15976"
+
+[[package]]
+name = "libcore"
+version = "0.1.0"
+dependencies = [
+ "alloy",
+ "alloy-rlp",
+ "anyhow",
+ "ark-bn254",
+ "ark-ff 0.5.0",
+ "clap",
+ "light-poseidon",
+ "rand 0.9.2",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "worm-witness-gens",
+]
 
 [[package]]
 name = "libloading"
@@ -3644,9 +3644,10 @@ dependencies = [
  "alloy",
  "anyhow",
  "axum",
- "core",
+ "libcore",
  "serde",
  "serde_json",
+ "thiserror 2.0.17",
  "tokio",
 ]
 

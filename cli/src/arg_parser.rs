@@ -3,7 +3,7 @@ use alloy::{
     signers::local::PrivateKeySigner,
 };
 use clap::{Parser, Subcommand};
-use core::{burn::broadcaster::Broadcaster, contracts::network::Network};
+use libcore::{burn::broadcaster::Broadcaster, contracts::network::Network};
 use std::{path::PathBuf, str::FromStr};
 
 /// Worm CLI
