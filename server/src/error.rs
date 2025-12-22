@@ -10,10 +10,10 @@ pub enum ServerError {
     #[error("Unexpected error: {0}")]
     Unexpected(#[from] anyhow::Error),
 
-    #[error("Validation error: {0}")]
+    #[error("{0}")]
     Validation(ValidationError),
 
-    #[error("Not found: {0}")]
+    #[error("{0} Not found")]
     NotFound(String),
 
     #[error("Invalid action: {0}")]
@@ -52,10 +52,13 @@ impl Display for ValidationError {
 
 impl IntoResponse for ServerError {
     fn into_response(self) -> axum::response::Response {
-        let error_message = self.to_string();
+        let mut error_message = self.to_string();
 
         let status = match self {
-            ServerError::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ServerError::Unexpected(_) => {
+                error_message = "unknown error".to_string(); // prevent information leak
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
             ServerError::Validation(_) => StatusCode::BAD_REQUEST,
             ServerError::NotFound(_) => StatusCode::NOT_FOUND,
             ServerError::InvalidAction(_) => StatusCode::FORBIDDEN,
