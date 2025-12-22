@@ -3,7 +3,8 @@ use axum::{
     extract::{Path, State},
     response::IntoResponse,
 };
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 ///  GET `/proof/{nullifier}` gets cached proof for the given nullifier.
 pub async fn proof_get_by_nullifier(

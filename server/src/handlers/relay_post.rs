@@ -1,7 +1,8 @@
 use crate::{data::AppState, error::ServerError};
 use axum::{Json, extract::State, response::IntoResponse};
 use serde::Deserialize;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 /// POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
 pub async fn relay_post(
