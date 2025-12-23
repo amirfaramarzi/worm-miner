@@ -1,15 +1,21 @@
-use crate::{data::AppState, error::ServerError};
+use crate::{
+    data::AppState,
+    error::{LogIfError, ServerError},
+    proof_queue_service::proof_job::ProofJob,
+};
 use alloy::{
     consensus::{BlockHeader, Header},
     eips::BlockNumberOrTag,
-    primitives::{Bytes, FixedBytes, U256, keccak256},
+    primitives::{Address, Bytes, FixedBytes, U256, keccak256},
     providers::Provider,
     rpc::types::EIP1186AccountProofResponse,
 };
 use alloy_rlp::RlpEncodable;
 use anyhow::anyhow;
 use axum::{Json, extract::State, response::IntoResponse};
-use serde::Deserialize;
+use common::contracts::network::Network;
+use common::utils::ether_amount_serializer;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -97,19 +103,44 @@ pub async fn proof_post(
             .cloned()
             .ok_or(anyhow!("Header not found!"))?,
     )?;
-    todo!();
+
+    let job = ProofJob::new(body);
+    if let Err(e) = state.job_channel.send(job) {
+        return Err(ServerError::Unexpected(
+            anyhow!("{e}").into_boxed_dyn_error(),
+        ))
+        .log_with_context("send_job_to_channel");
+    }
+
+    Ok(ProofPostResponse {})
 }
 
 #[derive(Deserialize)]
 pub struct ProofPostRequest {
-    target_block: u64,
-    account_proof: EIP1186AccountProofResponse,
+    pub target_block: u64,
+    pub account_proof: EIP1186AccountProofResponse,
+
+    pub network: Network,
+    pub burn_key: U256,
+    pub wallet_address: Address,
+
+    #[serde(with = "ether_amount_serializer")]
+    pub amount: U256,
+    #[serde(with = "ether_amount_serializer")]
+    pub broadcaster_fee: U256,
+    #[serde(with = "ether_amount_serializer")]
+    pub prover_fee: U256,
+    #[serde(with = "ether_amount_serializer")]
+    pub spend: U256,
+
+    pub receiver_hook: Bytes,
 }
 
+#[derive(Serialize)]
 pub struct ProofPostResponse {}
 
 impl IntoResponse for ProofPostResponse {
     fn into_response(self) -> axum::response::Response {
-        todo!()
+        Json(self).into_response()
     }
 }
