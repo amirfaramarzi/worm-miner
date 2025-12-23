@@ -1090,7 +1090,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "itertools 0.13.0",
+ "itertools 0.10.5",
  "log",
  "prettyplease",
  "proc-macro2",
@@ -4651,7 +4651,7 @@ checksum = "f17a85883d4e6d00e8a97c586de764dabcc06133f7f1d55dce5cdc070ad7fe59"
 [[package]]
 name = "worm-witness-gens"
 version = "0.1.0"
-source = "git+https://github.com/worm-privacy/witness#9500f1b66325590be63837f6571da9fbf21253ad"
+source = "git+https://github.com/worm-privacy/witness#39489897a5064d3ff93748271d1e715b95dd5851"
 dependencies = [
  "anyhow",
  "bindgen",
