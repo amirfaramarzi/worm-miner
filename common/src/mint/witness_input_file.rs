@@ -17,7 +17,7 @@ const NUMBER_OF_LAYERS: usize = 16;
 // number of bytes in each layer
 const LAYER_LEN: usize = 4 * 136;
 
-const MAX_HEADER_LEN: usize = 8 * 136;
+const MAX_HEADER_LEN: usize = 16 * 136;
 
 /// Warning: Do NOT rename this fields because these should be same as circom signals names
 #[allow(non_snake_case)]
