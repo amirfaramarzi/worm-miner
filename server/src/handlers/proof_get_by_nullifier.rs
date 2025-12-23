@@ -12,6 +12,7 @@ pub async fn proof_get_by_nullifier(
     Path(nullifier): Path<String>,
 ) -> Result<ProofGetByNullifierResponse, ServerError> {
     println!("nullifier: `{}`", nullifier);
+
     todo!();
 }
 
