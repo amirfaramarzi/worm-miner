@@ -1,7 +1,6 @@
 use std::{borrow::Cow, error::Error, fmt::Display};
 
 use alloy::transports::{RpcError, TransportErrorKind};
-use anyhow::anyhow;
 use axum::{
     http::{HeaderMap, StatusCode, header},
     response::IntoResponse,

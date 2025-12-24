@@ -1,14 +1,12 @@
 pub mod config;
 
-use crate::{
-    data::config::Config,
-    proof_queue_service::proof_job::{ProofJob, ProofResult},
-};
+use crate::{data::config::Config, proof_queue_service::proof_job::ProofJob};
 use alloy::{
     consensus::Header,
     primitives::U256,
     providers::{Provider, RootProvider},
 };
+use common::mint::proof_generator::RapidsnarkOutput;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::{RwLock, mpsc::UnboundedSender};
 
@@ -17,7 +15,7 @@ pub struct AppStateGeneric<P: Provider> {
     pub provider: P,
     pub header_cache: HashMap<u64, Header>,
     /// <nullifier, ProofResult>
-    pub proof_cache: HashMap<U256, ProofResult>,
+    pub proof_cache: HashMap<U256, Result<RapidsnarkOutput, anyhow::Error>>,
     pub job_channel: UnboundedSender<ProofJob>,
 }
 

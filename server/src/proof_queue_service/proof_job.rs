@@ -6,17 +6,16 @@ use anyhow::Ok;
 use anyhow::anyhow;
 use common::burn::burn_address::burn_address;
 use common::burn::extra_commitment;
+use common::mint::nullifier;
+use common::mint::proof_generator::RapidsnarkOutput;
 use common::mint::proof_generator::generate_proof;
 use common::mint::witness_generator::generate_witness_with_files;
 use common::mint::witness_input_file::WitnessInputFile;
-use common::mint::{nullifier, proof_generator::RapidsnarkOutput};
 use common::utils::{TryToFr, fr_to_u256, u256_to_fr};
 use std::env::{self};
 use std::fs;
 use std::path::PathBuf;
 use std::process::exit;
-
-pub type ProofResult = RapidsnarkOutput;
 
 pub struct ProofJob {
     pub proof_input: ProofPostRequest,
@@ -37,8 +36,7 @@ impl ProofJob {
 }
 
 impl ProofJob {
-    pub async fn run(&self, config: Config) -> Result<ProofResult, anyhow::Error> {
-        // TODO
+    pub async fn run(&self, config: Config) -> Result<RapidsnarkOutput, anyhow::Error> {
         let inp = &self.proof_input;
         let burn_key = inp.burn_key.try_to_fr()?;
         let burn_extra_commitment = extra_commitment::ExtraCommitment::new(

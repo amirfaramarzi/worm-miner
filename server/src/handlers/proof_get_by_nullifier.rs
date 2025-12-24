@@ -1,5 +1,6 @@
 use crate::{data::AppState, error::ServerError};
 use alloy::primitives::U256;
+use anyhow::anyhow;
 use axum::{
     Json,
     extract::{Path, State},
@@ -19,15 +20,17 @@ pub async fn proof_get_by_nullifier(
     let nullifier = U256::from_str_radix(&nullifier, 10)
         .map_err(|e| ServerError::validation("nullifier", nullifier.clone(), format!("{e}")))?;
 
-    let proof = state
-        .read()
-        .await
-        .proof_cache
-        .get(&nullifier)
-        .cloned()
-        .ok_or(ServerError::NotFound("proof".to_string()))?;
+    let state = state.read().await;
 
-    Ok(ProofGetByNullifierResponse { proof })
+    match state.proof_cache.get(&nullifier) {
+        Some(Ok(proof)) => Ok(ProofGetByNullifierResponse {
+            proof: proof.clone(),
+        }),
+        Some(Err(err)) => Err(ServerError::Unexpected(
+            anyhow!("{err}").into_boxed_dyn_error(),
+        )),
+        None => Err(ServerError::NotFound("proof".to_string())),
+    }
 }
 
 #[derive(Serialize)]

@@ -29,12 +29,8 @@ impl ProofQueueService {
         let config = { state.read().await.config.clone() };
 
         while let Some(job) = channel.recv().await {
-            match job.run(config.clone()).await {
-                Ok(proof) => {
-                    state.write().await.proof_cache.insert(job.nullifier, proof);
-                }
-                Err(e) => println!("error while generating proof:\n {e}"),
-            };
+            let r = job.run(config.clone()).await;
+            state.write().await.proof_cache.insert(job.nullifier, r);
         }
         println!("Channel closed");
     }
