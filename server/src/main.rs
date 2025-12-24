@@ -14,11 +14,18 @@ use tokio::sync::mpsc;
 use crate::{
     data::{AppState, config::Config},
     handlers::*,
-    proof_queue_service::{ProofQueueService, proof_job::ProofJob},
+    proof_queue_service::{
+        ProofQueueService,
+        proof_job::{ProofJob, run_rapidsnark_task_if_child_process},
+    },
 };
 
 #[tokio::main]
 async fn main() {
+    // this will do nothing if its not child process
+    // and will `exit()` after creating proof if its child process
+    run_rapidsnark_task_if_child_process();
+
     let config = Config::load().expect("error file loading config file");
     let port = config.port;
     config.print();
