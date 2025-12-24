@@ -26,14 +26,15 @@ impl ProofQueueService {
     async fn main_loop(self) {
         let mut channel = self.jobs_channel;
         let state = self.state;
+        let config = { state.read().await.config.clone() };
 
         while let Some(job) = channel.recv().await {
-            let result = job.run().await;
-            state
-                .write()
-                .await
-                .proof_cache
-                .insert(job.nullifier, result);
+            match job.run(config.clone()).await {
+                Ok(proof) => {
+                    state.write().await.proof_cache.insert(job.nullifier, proof);
+                }
+                Err(e) => println!("error while generating proof:\n {e}"),
+            };
         }
         println!("Channel closed");
     }

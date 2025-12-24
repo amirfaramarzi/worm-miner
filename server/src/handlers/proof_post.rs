@@ -95,16 +95,16 @@ pub async fn proof_post(
             .header;
         state.header_cache.insert(body.target_block, header.into());
     }
-    check_validity(
-        body.account_proof.clone(),
-        state
-            .header_cache
-            .get(&body.target_block)
-            .cloned()
-            .ok_or(anyhow!("Header not found!"))?,
-    )?;
 
-    let job = ProofJob::new(body);
+    let block_header = state
+        .header_cache
+        .get(&body.target_block)
+        .cloned()
+        .ok_or(anyhow!("Header not found!"))?;
+
+    check_validity(body.account_proof.clone(), block_header.clone())?;
+
+    let job = ProofJob::new(body, block_header);
     if let Err(e) = state.job_channel.send(job) {
         return Err(ServerError::Unexpected(
             anyhow!("{e}").into_boxed_dyn_error(),
@@ -122,10 +122,8 @@ pub struct ProofPostRequest {
 
     pub network: Network,
     pub burn_key: U256,
-    pub wallet_address: Address,
+    pub receiver_address: Address,
 
-    #[serde(with = "ether_amount_serializer")]
-    pub amount: U256,
     #[serde(with = "ether_amount_serializer")]
     pub broadcaster_fee: U256,
     #[serde(with = "ether_amount_serializer")]
