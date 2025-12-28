@@ -3650,6 +3650,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.17",
  "tokio",
+ "tower-http",
 ]
 
 [[package]]
@@ -4117,9 +4118,9 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.6.6"
+version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adc82fd73de2a9722ac5da747f12383d2bfdb93591ee6c58486e0097890f05f2"
+checksum = "d4e6559d53cc268e5031cd8429d05415bc4cb4aefc4aa5d6cc35fbf5b924a1f8"
 dependencies = [
  "bitflags",
  "bytes",
@@ -4651,7 +4652,7 @@ checksum = "f17a85883d4e6d00e8a97c586de764dabcc06133f7f1d55dce5cdc070ad7fe59"
 [[package]]
 name = "worm-witness-gens"
 version = "0.1.0"
-source = "git+https://github.com/worm-privacy/witness#9500f1b66325590be63837f6571da9fbf21253ad"
+source = "git+https://github.com/worm-privacy/witness#39489897a5064d3ff93748271d1e715b95dd5851"
 dependencies = [
  "anyhow",
  "bindgen",

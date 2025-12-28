@@ -1,5 +1,8 @@
 use crate::{data::AppState, error::ServerError};
-use axum::{extract::State, response::IntoResponse};
+use alloy::primitives::U256;
+use axum::{Json, extract::State, response::IntoResponse};
+use common::utils::ether_amount_serializer;
+use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -7,13 +10,19 @@ use tokio::sync::RwLock;
 pub async fn proof_get(
     State(state): State<Arc<RwLock<AppState>>>,
 ) -> Result<ProofGetResponse, ServerError> {
-    todo!();
+    let min_prover_fee = state.read().await.config.min_prover_fee;
+
+    Ok(ProofGetResponse { min_prover_fee })
 }
 
-pub struct ProofGetResponse {}
+#[derive(Serialize)]
+pub struct ProofGetResponse {
+    #[serde(with = "ether_amount_serializer")]
+    min_prover_fee: U256,
+}
 
 impl IntoResponse for ProofGetResponse {
     fn into_response(self) -> axum::response::Response {
-        todo!()
+        Json(&self).into_response()
     }
 }

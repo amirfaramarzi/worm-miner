@@ -2,10 +2,10 @@ use std::{fs, path::PathBuf};
 
 use crate::consts::BURN_AMOUNT_LIMIT;
 use alloy::{
+    consensus::Header,
     primitives::{Address, U256, keccak256},
-    rlp::Encodable,
-    rlp::RlpDecodable,
-    rpc::types::{Block, EIP1186AccountProofResponse},
+    rlp::{Encodable, RlpDecodable},
+    rpc::types::EIP1186AccountProofResponse,
 };
 use alloy_rlp::Decodable;
 use anyhow::anyhow;
@@ -17,7 +17,7 @@ const NUMBER_OF_LAYERS: usize = 16;
 // number of bytes in each layer
 const LAYER_LEN: usize = 4 * 136;
 
-const MAX_HEADER_LEN: usize = 8 * 136;
+const MAX_HEADER_LEN: usize = 16 * 136;
 
 /// Warning: Do NOT rename this fields because these should be same as circom signals names
 #[allow(non_snake_case)]
@@ -41,18 +41,18 @@ pub struct WitnessInputFile {
 impl WitnessInputFile {
     pub fn new(
         proof: EIP1186AccountProofResponse,
-        block: Block,
+        block_header: Header,
         burn_key: Fr,
         spend: U256,
         burn_extra_commitment: Fr,
         prover: Address,
     ) -> Result<Self, WitnessInputFileError> {
-        if !block.header.state_root == keccak256(&proof.account_proof[0]) {
+        if !block_header.state_root == keccak256(&proof.account_proof[0]) {
             return Err(WitnessInputFileError::NotOnSameBlock);
         }
 
         let mut header_bytes = vec![];
-        block.header.inner.encode(&mut header_bytes);
+        block_header.encode(&mut header_bytes);
 
         let leaf = proof
             .account_proof

@@ -22,7 +22,7 @@ pub fn generate_proof(witness_file: PathBuf) -> Result<RapidsnarkOutput, anyhow:
     Ok(output)
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct RapidsnarkProof {
     pub pi_a: [U256; 3],
     pub pi_b: [[U256; 2]; 3],
@@ -30,7 +30,7 @@ pub struct RapidsnarkProof {
     pub protocol: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct RapidsnarkOutput {
     pub proof: RapidsnarkProof,
     pub public: Vec<U256>,

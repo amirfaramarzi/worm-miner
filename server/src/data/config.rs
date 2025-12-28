@@ -6,7 +6,7 @@ use common::utils::worm_home;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Config {
     #[serde(with = "ether_amount_serializer")]
     pub min_prover_fee: U256,

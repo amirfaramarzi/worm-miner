@@ -69,7 +69,7 @@ pub async fn mint(
 
         let result = WitnessInputFile::new(
             proof,
-            block,
+            block.header.inner,
             burn_key,
             burn_output.reveal_amount,
             burn_extra_commitment.hash().map_err(|e| anyhow!("{e}"))?,
