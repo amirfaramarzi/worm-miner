@@ -76,12 +76,11 @@ impl ProofJob {
 
         let status = child.wait().await?;
 
-        if let Some(code) = status.code() {
-            // non-zero code
+        if !status.success() {
             let logs = child.stderr;
             return Err(anyhow!(
-                "error code `{}` on child process while generating proof, logs:\n {:?}",
-                code,
+                "error code `{:?}` on child process while generating proof, logs:\n {:?}",
+                status.code(),
                 logs
             ));
         }
