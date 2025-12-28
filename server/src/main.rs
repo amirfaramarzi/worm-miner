@@ -10,6 +10,7 @@ use axum::{
 };
 use std::sync::Arc;
 use tokio::sync::mpsc;
+use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer};
 
 use crate::{
     data::{AppState, config::Config},
@@ -37,12 +38,18 @@ async fn main() {
 
     ProofQueueService::new(job_rx, Arc::clone(&state)).start();
 
+    let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::any())
+        .allow_methods(AllowMethods::any())
+        .allow_headers(AllowHeaders::any());
+
     let router = Router::new()
         .route("/proof", get(proof_get))
         .route("/proof", post(proof_post))
         .route("/proof/{nullifier}", get(proof_get_by_nullifier))
         .route("/relay", get(relay_get))
         .route("/relay", post(relay_post))
+        .layer(cors)
         .with_state(state);
 
     let address = format!("0.0.0.0:{}", port);
