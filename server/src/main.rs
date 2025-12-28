@@ -2,6 +2,7 @@ mod data;
 mod error;
 mod handlers;
 mod proof_queue_service;
+mod utils;
 
 use alloy::providers::RootProvider;
 use axum::{
