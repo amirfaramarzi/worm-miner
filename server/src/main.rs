@@ -31,7 +31,7 @@ async fn main() {
     let port = config.port;
     config.print();
 
-    let provider = RootProvider::new_http("https://127.0.0.1:8545".try_into().unwrap());
+    let provider = RootProvider::new_http("http://127.0.0.1:8545".try_into().unwrap());
 
     let (job_tx, job_rx) = mpsc::unbounded_channel::<ProofJob>();
     let state = AppState::new(config, provider, job_tx);
