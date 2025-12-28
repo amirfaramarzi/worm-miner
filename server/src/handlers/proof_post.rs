@@ -40,7 +40,7 @@ pub async fn proof_post(
         .cloned()
         .ok_or(anyhow!("Header not found!"))?;
 
-    validate_account_proof(body.account_proof.clone(), block_header.clone())?;
+    validate_account_proof(body.account_proof.clone(), block_header.state_root).log()?;
 
     let job = ProofJob::new(body, block_header);
     if let Err(e) = state.job_channel.send(job) {
