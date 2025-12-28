@@ -15,6 +15,7 @@ use std::{env, fmt::Display, str::FromStr};
     serde::Deserialize,
     Default,
 )]
+#[serde(rename_all = "lowercase")]
 pub enum Network {
     Anvil,
     Sepolia,
