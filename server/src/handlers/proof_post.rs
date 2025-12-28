@@ -23,8 +23,8 @@ use tokio::sync::RwLock;
 struct MptLeaf {
     nonce: u64,
     balance: U256,
-    code_hash: FixedBytes<32>,
     storage_hash: FixedBytes<32>,
+    code_hash: FixedBytes<32>,
 }
 
 pub fn check_validity(
