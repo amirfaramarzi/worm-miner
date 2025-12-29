@@ -54,9 +54,9 @@ pub fn validate_account_proof(
     }
 
     let key_hex = if key_val[0][0] & 0xf0 == 0x30 {
-        String::from(&format!("{:x}", key_val[0][0])[1..])
+        String::from(&format!("{:x}", key_val[0])[3..])
     } else if key_val[0][0] == 0x20 {
-        String::from(&format!("{:x}", key_val[0][0])[2..])
+        String::from(&format!("{:x}", key_val[0])[4..])
     } else {
         return proof_err("Weird address hash prefix!");
     };
