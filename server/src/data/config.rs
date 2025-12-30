@@ -1,6 +1,8 @@
-use alloy::primitives::Address;
 use alloy::primitives::utils::format_ether;
+use alloy::primitives::{Address, B256};
 use alloy::primitives::{U256, utils::parse_ether};
+use alloy::signers::local::PrivateKeySigner;
+use anyhow::anyhow;
 use common::utils::ether_amount_serializer;
 use common::utils::worm_home;
 use serde::{Deserialize, Serialize};
@@ -12,7 +14,7 @@ pub struct Config {
     pub min_prover_fee: U256,
     #[serde(with = "ether_amount_serializer")]
     pub min_broadcaster_fee: U256,
-    pub owner_address: Address,
+    pub private_key: B256,
     pub port: u16,
 }
 
@@ -24,7 +26,17 @@ impl Config {
             Self::create_default_file()?;
             println!("server config created at '{}'", path.to_str().unwrap());
         }
-        Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
+        let config: Config = serde_json::from_str(&fs::read_to_string(&path)?)?;
+
+        // prevent user accidentally start server with no address for safety
+        if config.private_key == B256::ZERO {
+            return Err(anyhow!(
+                "private_key is ZERO,\n change it in -> {}",
+                path.to_str().unwrap()
+            ));
+        }
+
+        Ok(config)
     }
 
     pub fn save(&self) -> Result<(), anyhow::Error> {
@@ -58,15 +70,18 @@ impl Config {
                 .trim_end_matches('0')
                 .trim_end_matches('.')
         );
-        println!("owner address       = {}", self.owner_address);
+        println!("private_key         = {}", self.private_key);
+        println!("address             = {}", self.address());
         println!("port                = {}", self.port);
-
-        if self.owner_address == Address::ZERO {
-            println!(
-                " --- WARNING!! ---\nowner address is ZERO make sure you change it to you address"
-            )
-        }
         println!()
+    }
+
+    pub fn signer(&self) -> PrivateKeySigner {
+        PrivateKeySigner::from_bytes(&self.private_key).unwrap()
+    }
+
+    pub fn address(&self) -> Address {
+        self.signer().address()
     }
 }
 
@@ -76,7 +91,7 @@ impl Default for Config {
             min_prover_fee: parse_ether("0.001").unwrap(),
             min_broadcaster_fee: parse_ether("0.001").unwrap(),
             port: 8080,
-            owner_address: Address::ZERO,
+            private_key: B256::ZERO,
         }
     }
 }

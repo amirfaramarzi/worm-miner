@@ -9,7 +9,7 @@ use axum::{
     Router,
     routing::{get, post},
 };
-use std::sync::Arc;
+use std::{process::exit, sync::Arc};
 use tokio::sync::mpsc;
 use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer};
 
@@ -28,7 +28,14 @@ async fn main() {
     // and will `exit()` after creating proof if its child process
     run_rapidsnark_task_if_child_process();
 
-    let config = Config::load().expect("error file loading config file");
+    let config = match Config::load() {
+        Ok(x) => x,
+        Err(e) => {
+            eprintln!("error while loading config:\n{}", e);
+            exit(1);
+        }
+    };
+
     let port = config.port;
     config.print();
 
