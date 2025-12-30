@@ -3,16 +3,6 @@ mod error;
 mod handlers;
 mod proof_queue_service;
 mod utils;
-
-use alloy::providers::RootProvider;
-use axum::{
-    Router,
-    routing::{get, post},
-};
-use std::{process::exit, sync::Arc};
-use tokio::sync::mpsc;
-use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer};
-
 use crate::{
     data::{AppState, config::Config},
     handlers::*,
@@ -21,6 +11,13 @@ use crate::{
         proof_job::{ProofJob, run_rapidsnark_task_if_child_process},
     },
 };
+use axum::{
+    Router,
+    routing::{get, post},
+};
+use std::{process::exit, sync::Arc};
+use tokio::sync::mpsc;
+use tower_http::cors::{AllowHeaders, AllowMethods, AllowOrigin, CorsLayer};
 
 #[tokio::main]
 async fn main() {
@@ -35,14 +32,10 @@ async fn main() {
             exit(1);
         }
     };
-
-    let port = config.port;
     config.print();
 
-    let provider = RootProvider::new_http("http://127.0.0.1:8545".try_into().unwrap());
-
     let (job_tx, job_rx) = mpsc::unbounded_channel::<ProofJob>();
-    let state = AppState::new(config, provider, job_tx);
+    let state = AppState::new(config, job_tx);
 
     ProofQueueService::new(job_rx, Arc::clone(&state)).start();
 
@@ -60,7 +53,7 @@ async fn main() {
         .layer(cors)
         .with_state(state);
 
-    let address = format!("0.0.0.0:{}", port);
+    let address = format!("0.0.0.0:{}", config.port);
     let listener = tokio::net::TcpListener::bind(&address).await.unwrap();
     println!("Listening on `{}`", address);
     axum::serve(listener, router).await.unwrap();
