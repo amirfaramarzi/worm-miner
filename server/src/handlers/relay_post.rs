@@ -1,6 +1,7 @@
 use crate::{data::AppState, error::ServerError};
 use alloy::primitives::{Address, Bytes, U256};
 use axum::{Json, extract::State, response::IntoResponse};
+use common::utils::ether_amount_serializer;
 use common::{
     contracts::{beth::BETHContract, network::Network},
     mint::proof_generator::RapidsnarkOutput,
@@ -45,9 +46,12 @@ pub struct RelayPostRequest {
     // poseidon3(prefix, burn_key, amount-spend)
     remaining_coin: U256,
 
+    #[serde(with = "ether_amount_serializer")]
     broadcaster_fee: U256,
+    #[serde(with = "ether_amount_serializer")]
     reveal_amount: U256,
     receiver: Address,
+    #[serde(with = "ether_amount_serializer")]
     prover_fee: U256,
 
     prover_address: Address,
