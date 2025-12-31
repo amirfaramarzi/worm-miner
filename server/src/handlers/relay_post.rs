@@ -15,7 +15,10 @@ pub async fn relay_post(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(body): Json<RelayPostRequest>,
 ) -> Result<RelayPostResponse, ServerError> {
-    let signer = { state.read().await.config.signer() };
+    let (signer, prover_address) = {
+        let state = state.read().await;
+        (state.config.signer(), state.config.address())
+    };
 
     let beth = BETHContract::new(body.network, signer).await?;
 
@@ -28,7 +31,7 @@ pub async fn relay_post(
         body.reveal_amount,
         body.receiver,
         body.prover_fee,
-        body.prover_address,
+        prover_address,
         body.swap_calldata,
     )
     .await?;
@@ -54,7 +57,6 @@ pub struct RelayPostRequest {
     #[serde(with = "ether_amount_serializer")]
     prover_fee: U256,
 
-    prover_address: Address,
     swap_calldata: Bytes,
 }
 
