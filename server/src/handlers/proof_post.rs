@@ -2,7 +2,7 @@ use crate::{
     data::AppState,
     error::{LogIfError, ServerError},
     proof_queue_service::proof_job::ProofJob,
-    utils::validate_account_proof,
+    utils::{get_provider, validate_account_proof},
 };
 use alloy::{
     eips::BlockNumberOrTag,
@@ -12,8 +12,7 @@ use alloy::{
 };
 use anyhow::anyhow;
 use axum::{Json, extract::State, response::IntoResponse};
-use common::contracts::network::Network;
-use common::utils::ether_amount_serializer;
+use common::{contracts::network::Network, utils::ether_amount_serializer};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -23,10 +22,11 @@ pub async fn proof_post(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(body): Json<ProofPostRequest>,
 ) -> Result<ProofPostResponse, ServerError> {
+    let provider = get_provider(body.network)?;
+
     let mut state = state.write().await;
     if !state.header_cache.contains_key(&body.target_block) {
-        let header = state
-            .provider
+        let header = provider
             .get_block_by_number(BlockNumberOrTag::Number(body.target_block))
             .await?
             .ok_or(anyhow!("Block not found!"))?

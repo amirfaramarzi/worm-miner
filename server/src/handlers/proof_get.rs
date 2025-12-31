@@ -10,9 +10,11 @@ use tokio::sync::RwLock;
 pub async fn proof_get(
     State(state): State<Arc<RwLock<AppState>>>,
 ) -> Result<ProofGetResponse, ServerError> {
-    let min_prover_fee = state.read().await.config.min_prover_fee;
+    let state = state.read().await;
 
-    Ok(ProofGetResponse { min_prover_fee })
+    Ok(ProofGetResponse {
+        min_prover_fee: state.config.min_prover_fee,
+    })
 }
 
 #[derive(Serialize)]

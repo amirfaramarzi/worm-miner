@@ -1,6 +1,12 @@
 use crate::{data::AppState, error::ServerError};
+use alloy::primitives::{Address, Bytes, U256};
 use axum::{Json, extract::State, response::IntoResponse};
-use serde::Deserialize;
+use common::utils::ether_amount_serializer;
+use common::{
+    contracts::{beth::BETHContract, network::Network},
+    mint::proof_generator::RapidsnarkOutput,
+};
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -9,16 +15,56 @@ pub async fn relay_post(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(body): Json<RelayPostRequest>,
 ) -> Result<RelayPostResponse, ServerError> {
-    todo!();
+    let (signer, prover_address) = {
+        let state = state.read().await;
+        (state.config.signer(), state.config.address())
+    };
+
+    let beth = BETHContract::new(body.network, signer).await?;
+
+    beth.mint(
+        body.proof,
+        body.block_number,
+        body.nullifier,
+        body.remaining_coin,
+        body.broadcaster_fee,
+        body.reveal_amount,
+        body.receiver,
+        body.prover_fee,
+        prover_address,
+        body.swap_calldata,
+    )
+    .await?;
+
+    Ok(RelayPostResponse {})
 }
 
 #[derive(Deserialize)]
-pub struct RelayPostRequest {}
+pub struct RelayPostRequest {
+    network: Network,
+    proof: RapidsnarkOutput,
+    block_number: U256,
+    nullifier: U256,
 
+    // poseidon3(prefix, burn_key, amount-spend)
+    remaining_coin: U256,
+
+    #[serde(with = "ether_amount_serializer")]
+    broadcaster_fee: U256,
+    #[serde(with = "ether_amount_serializer")]
+    reveal_amount: U256,
+    receiver: Address,
+    #[serde(with = "ether_amount_serializer")]
+    prover_fee: U256,
+
+    swap_calldata: Bytes,
+}
+
+#[derive(Serialize)]
 pub struct RelayPostResponse {}
 
 impl IntoResponse for RelayPostResponse {
     fn into_response(self) -> axum::response::Response {
-        todo!()
+        Json(self).into_response()
     }
 }

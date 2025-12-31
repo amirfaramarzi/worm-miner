@@ -54,7 +54,7 @@ impl ProofJob {
             burn_key,
             inp.spend,
             burn_extra_commitment_hash,
-            config.owner_address,
+            config.address(),
         )?;
 
         let input_wit_file =
