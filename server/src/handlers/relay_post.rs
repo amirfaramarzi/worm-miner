@@ -15,10 +15,18 @@ pub async fn relay_post(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(body): Json<RelayPostRequest>,
 ) -> Result<RelayPostResponse, ServerError> {
-    let (signer, prover_address) = {
-        let state = state.read().await;
-        (state.config.signer(), state.config.address())
+    let (signer, prover_address, min_broadcaster_fee) = {
+        let config = state.read().await.config;
+        (
+            config.signer(),
+            config.address(),
+            config.min_broadcaster_fee,
+        )
     };
+
+    if body.broadcaster_fee < min_broadcaster_fee {
+        return Err(ServerError::InvalidAction("broadcaster fee is too low"));
+    }
 
     let beth = BETHContract::new(body.network, signer).await?;
 

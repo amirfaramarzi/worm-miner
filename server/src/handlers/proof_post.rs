@@ -25,6 +25,11 @@ pub async fn proof_post(
     let provider = get_provider(body.network)?;
 
     let mut state = state.write().await;
+
+    if body.prover_fee < state.config.min_prover_fee {
+        return Err(ServerError::InvalidAction("prover fee is too low"));
+    }
+
     if !state.header_cache.contains_key(&body.target_block) {
         let header = provider
             .get_block_by_number(BlockNumberOrTag::Number(body.target_block))
