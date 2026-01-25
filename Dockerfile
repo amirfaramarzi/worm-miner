@@ -100,6 +100,10 @@ ARG RUSTFLAGS="-C target-cpu=x86-64 -C target-feature=-avx,-avx2,-fma"
 ENV RUSTFLAGS="${RUSTFLAGS}"
 ENV CARGO_UNSTABLE_EDITION2024=true
 
+COPY common/src common/src
+COPY cli/src cli/src
+COPY server/src server/src
+
 # Build the Rust application (release)
 RUN cargo +nightly build --release --bin server
 
