@@ -1,5 +1,5 @@
 use crate::{data::AppState, error::ServerError};
-use alloy::primitives::U256;
+use alloy::primitives::{Address, U256};
 use axum::{Json, extract::State, response::IntoResponse};
 use common::utils::ether_amount_serializer;
 use serde::Serialize;
@@ -14,6 +14,7 @@ pub async fn proof_get(
 
     Ok(ProofGetResponse {
         min_prover_fee: state.config.min_prover_fee,
+        prover_address: state.config.address(),
     })
 }
 
@@ -21,6 +22,7 @@ pub async fn proof_get(
 pub struct ProofGetResponse {
     #[serde(with = "ether_amount_serializer")]
     min_prover_fee: U256,
+    prover_address: Address,
 }
 
 impl IntoResponse for ProofGetResponse {
