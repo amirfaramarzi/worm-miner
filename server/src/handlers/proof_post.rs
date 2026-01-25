@@ -58,7 +58,7 @@ pub async fn proof_post(
     Ok(ProofPostResponse {})
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct ProofPostRequest {
     pub target_block: u64,
     pub account_proof: EIP1186AccountProofResponse,

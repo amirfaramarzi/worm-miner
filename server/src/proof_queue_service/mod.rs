@@ -1,6 +1,10 @@
 pub mod proof_job;
 
-use crate::{data::AppState, proof_queue_service::proof_job::ProofJob};
+use crate::{
+    data::{AppState, Proof},
+    proof_queue_service::proof_job::ProofJob,
+};
+use alloy::primitives::U256;
 use std::sync::Arc;
 use tokio::sync::{RwLock, mpsc};
 
@@ -29,8 +33,14 @@ impl ProofQueueService {
         let config = { state.read().await.config.clone() };
 
         while let Some(job) = channel.recv().await {
-            let r = job.run(config.clone()).await;
-            state.write().await.proof_cache.insert(job.nullifier, r);
+            let block_number = job.header.number;
+            let result = job.run(config.clone()).await;
+            let result = result.map(|e| Proof::new(U256::from(block_number), e));
+            state
+                .write()
+                .await
+                .proof_cache
+                .insert(job.nullifier, result);
         }
         println!("Channel closed");
     }

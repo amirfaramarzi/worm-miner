@@ -1,4 +1,7 @@
-use crate::{data::AppState, error::ServerError};
+use crate::{
+    data::{AppState, Proof},
+    error::ServerError,
+};
 use alloy::primitives::U256;
 use anyhow::anyhow;
 use axum::{
@@ -6,7 +9,6 @@ use axum::{
     extract::{Path, State},
     response::IntoResponse,
 };
-use common::mint::proof_generator::RapidsnarkOutput;
 use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -36,7 +38,7 @@ pub async fn proof_get_by_nullifier(
 #[derive(Serialize)]
 pub struct ProofGetByNullifierResponse {
     #[serde(flatten)]
-    proof: RapidsnarkOutput,
+    proof: Proof,
 }
 
 impl IntoResponse for ProofGetByNullifierResponse {

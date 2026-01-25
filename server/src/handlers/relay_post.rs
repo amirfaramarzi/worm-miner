@@ -1,11 +1,9 @@
+use crate::data::Proof;
 use crate::{data::AppState, error::ServerError};
 use alloy::primitives::{Address, Bytes, U256};
 use axum::{Json, extract::State, response::IntoResponse};
+use common::contracts::{beth::BETHContract, network::Network};
 use common::utils::ether_amount_serializer;
-use common::{
-    contracts::{beth::BETHContract, network::Network},
-    mint::proof_generator::RapidsnarkOutput,
-};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -31,8 +29,8 @@ pub async fn relay_post(
     let beth = BETHContract::new(body.network, signer).await?;
 
     beth.mint(
-        body.proof,
-        body.block_number,
+        body.proof.rapidsnark_output,
+        body.proof.target_block,
         body.nullifier,
         body.remaining_coin,
         body.broadcaster_fee,
@@ -47,11 +45,10 @@ pub async fn relay_post(
     Ok(RelayPostResponse {})
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct RelayPostRequest {
     network: Network,
-    proof: RapidsnarkOutput,
-    block_number: U256,
+    proof: Proof,
     nullifier: U256,
 
     // poseidon3(prefix, burn_key, amount-spend)
