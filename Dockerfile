@@ -67,7 +67,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy worm-miner source
-COPY . .
+COPY Cargo.toml .
+COPY cli/Cargo.toml ./cli
+COPY common/Cargo.toml ./common
+COPY server/Cargo.toml ./server
+RUN cargo +nightly build --release --workspace
 
 # Copy rapidsnark libraries and replace precompiled ones
 COPY --from=rapidsnark-builder /src/rapidsnark/package/lib /src/rapidsnark-libs/lib
