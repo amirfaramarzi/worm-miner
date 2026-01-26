@@ -26,19 +26,32 @@ pub async fn proof_get_by_nullifier(
 
     match state.proof_cache.get(&nullifier) {
         Some(Ok(proof)) => Ok(ProofGetByNullifierResponse {
-            proof: proof.clone(),
+            proof: Some(proof.clone()),
+            position_in_queue: None,
         }),
         Some(Err(err)) => Err(ServerError::Unexpected(
             anyhow!("{err}").into_boxed_dyn_error(),
         )),
-        None => Err(ServerError::NotFound("proof".to_string())),
+        None => {
+            if let Some(job_id) = state.nullifier_to_job_id.get(&nullifier) {
+                Ok(ProofGetByNullifierResponse {
+                    proof: None,
+                    position_in_queue: state
+                        .current_processing_job_id
+                        .map(|curr| job_id.saturating_sub(curr)),
+                })
+            } else {
+                Err(ServerError::NotFound("proof".to_string()))
+            }
+        }
     }
 }
 
 #[derive(Serialize)]
 pub struct ProofGetByNullifierResponse {
     #[serde(flatten)]
-    proof: Proof,
+    proof: Option<Proof>,
+    position_in_queue: Option<usize>,
 }
 
 impl IntoResponse for ProofGetByNullifierResponse {

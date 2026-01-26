@@ -16,6 +16,10 @@ pub struct AppState {
     /// <nullifier, ProofResult>
     pub proof_cache: HashMap<U256, ProofResult>,
     pub job_channel: UnboundedSender<ProofJob>,
+
+    pub nullifier_to_job_id: HashMap<U256, usize>,
+    pub current_processing_job_id: Option<usize>,
+    pub next_job_id: usize,
 }
 
 impl AppState {
@@ -25,6 +29,9 @@ impl AppState {
             header_cache: Default::default(),
             proof_cache: Default::default(),
             job_channel,
+            current_processing_job_id: None,
+            next_job_id: 0,
+            nullifier_to_job_id: Default::default(),
         }))
     }
 }

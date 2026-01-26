@@ -47,13 +47,17 @@ pub async fn proof_post(
 
     validate_account_proof(body.account_proof.clone(), block_header.state_root).log()?;
 
-    let job = ProofJob::new(body, block_header);
+    let job_id = state.next_job_id;
+    let job = ProofJob::new(job_id, body, block_header);
+    let nullifier = job.nullifier;
     if let Err(e) = state.job_channel.send(job) {
         return Err(ServerError::Unexpected(
             anyhow!("{e}").into_boxed_dyn_error(),
         ))
         .log_with_context("send_job_to_channel");
     }
+    state.nullifier_to_job_id.insert(nullifier, job_id);
+    state.next_job_id += 1;
 
     Ok(ProofPostResponse {})
 }

@@ -18,16 +18,18 @@ use std::path::PathBuf;
 use std::process::exit;
 
 pub struct ProofJob {
+    pub job_id: usize,
     pub proof_input: ProofPostRequest,
     pub header: Header,
     pub nullifier: U256,
 }
 
 impl ProofJob {
-    pub fn new(proof_input: ProofPostRequest, header: Header) -> Self {
+    pub fn new(job_id: usize, proof_input: ProofPostRequest, header: Header) -> Self {
         let nullifier_ =
             nullifier::compute_nullifier(u256_to_fr(proof_input.burn_key).unwrap()).unwrap();
         Self {
+            job_id,
             proof_input,
             header,
             nullifier: fr_to_u256(&nullifier_),
