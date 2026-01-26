@@ -14,6 +14,9 @@ pub enum ServerError {
     #[error("{0} Not found")]
     NotFound(String),
 
+    #[error("{0}")]
+    InQueue(isize),
+
     #[error("Invalid action: {0}")]
     InvalidAction(&'static str),
 
@@ -71,6 +74,7 @@ impl IntoResponse for ServerError {
             }
             ServerError::Validation(_) => StatusCode::BAD_REQUEST,
             ServerError::NotFound(_) => StatusCode::NOT_FOUND,
+            ServerError::InQueue(_) => StatusCode::NOT_FOUND,
             ServerError::InvalidAction(_) => StatusCode::FORBIDDEN,
             ServerError::RpcTransport(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
