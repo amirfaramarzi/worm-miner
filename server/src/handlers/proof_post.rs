@@ -47,13 +47,35 @@ pub async fn proof_post(
 
     validate_account_proof(body.account_proof.clone(), block_header.state_root).log()?;
 
-    let job = ProofJob::new(body, block_header);
+    let job_id = state.next_job_id;
+    let job = ProofJob::new(job_id, body, block_header);
+    let nullifier = job.nullifier;
+
+    if let Some(user_job_id) = state.nullifier_to_job_id.get(&nullifier) {
+        if state.proof_cache.contains_key(&nullifier) {
+            // Proof is already created!
+            return Ok(ProofPostResponse {});
+        } else {
+            if let Some(running_job_id) = state.current_processing_job_id {
+                if running_job_id <= *user_job_id {
+                    // Proof is already in queue!
+                    return Ok(ProofPostResponse {});
+                } else {
+                    // Loop is processing a newer job id but proof doesn't exist in cache!
+                    state.nullifier_to_job_id.remove(&nullifier);
+                }
+            }
+        }
+    }
+
     if let Err(e) = state.job_channel.send(job) {
         return Err(ServerError::Unexpected(
             anyhow!("{e}").into_boxed_dyn_error(),
         ))
         .log_with_context("send_job_to_channel");
     }
+    state.nullifier_to_job_id.insert(nullifier, job_id);
+    state.next_job_id += 1;
 
     Ok(ProofPostResponse {})
 }

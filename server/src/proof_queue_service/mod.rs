@@ -33,14 +33,13 @@ impl ProofQueueService {
         let config = { state.read().await.config.clone() };
 
         while let Some(job) = channel.recv().await {
+            state.write().await.current_processing_job_id = Some(job.job_id);
             let block_number = job.header.number;
             let result = job.run(config.clone()).await;
             let result = result.map(|e| Proof::new(U256::from(block_number), e));
-            state
-                .write()
-                .await
-                .proof_cache
-                .insert(job.nullifier, result);
+            let mut state = state.write().await;
+            state.proof_cache.insert(job.nullifier, result);
+            state.current_processing_job_id = None;
         }
         println!("Channel closed");
     }

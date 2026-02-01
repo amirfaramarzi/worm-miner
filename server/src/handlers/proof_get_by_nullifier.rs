@@ -31,7 +31,16 @@ pub async fn proof_get_by_nullifier(
         Some(Err(err)) => Err(ServerError::Unexpected(
             anyhow!("{err}").into_boxed_dyn_error(),
         )),
-        None => Err(ServerError::NotFound("proof".to_string())),
+        None => {
+            if let Some(job_id) = state.nullifier_to_job_id.get(&nullifier) {
+                let pos_in_queue = state
+                    .current_processing_job_id
+                    .map(|curr| job_id.saturating_sub(curr) as isize);
+                Err(ServerError::InQueue(pos_in_queue.unwrap_or(-1)))
+            } else {
+                Err(ServerError::NotFound("proof".to_string()))
+            }
+        }
     }
 }
 

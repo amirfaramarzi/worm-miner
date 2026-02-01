@@ -66,8 +66,21 @@ RUN apt-get update && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Build args for Rust flags configuration
+# By default, use conservative flags for wider compatibility
+ARG RUSTFLAGS="-C target-cpu=x86-64 -C target-feature=-avx,-avx2,-fma"
+ENV RUSTFLAGS="${RUSTFLAGS}"
+ENV CARGO_UNSTABLE_EDITION2024=true
+
 # Copy worm-miner source
-COPY . .
+COPY Cargo.toml .
+COPY cli/Cargo.toml ./cli/Cargo.toml
+RUN mkdir -p cli/src && echo "fn main() {}" > cli/src/main.rs
+COPY common/Cargo.toml ./common/Cargo.toml
+RUN mkdir -p common/src && echo "fn main() {}" > common/src/main.rs
+COPY server/Cargo.toml ./server/Cargo.toml
+RUN mkdir -p server/src && echo "fn main() {}" > server/src/main.rs
+RUN cargo +nightly build --release --workspace
 
 # Copy rapidsnark libraries and replace precompiled ones
 COPY --from=rapidsnark-builder /src/rapidsnark/package/lib /src/rapidsnark-libs/lib
@@ -87,11 +100,9 @@ COPY --from=circuits-builder /src/witness/spend /tmp/witness/spend
 COPY --from=circuits-builder /src/witness/fr /tmp/witness/fr
 COPY --from=circuits-builder /src/witness/Makefile /tmp/witness/
 
-# Build args for Rust flags configuration
-# By default, use conservative flags for wider compatibility
-ARG RUSTFLAGS="-C target-cpu=x86-64 -C target-feature=-avx,-avx2,-fma"
-ENV RUSTFLAGS="${RUSTFLAGS}"
-ENV CARGO_UNSTABLE_EDITION2024=true
+COPY common/src common/src
+COPY cli/src cli/src
+COPY server/src server/src
 
 # Build the Rust application (release)
 RUN cargo +nightly build --release --bin server
