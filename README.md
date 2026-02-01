@@ -1,12 +1,12 @@
-# Worm Miner
+# WORM Miner
 
-There are 2 tools in this repo:
-1. `cli` is a tool that helps you interact with Worm by running different subcommands it lets you make your own proof on your machine without using someone elses server.
-2. `server` helps you run a Worm miner server that other people can use to generate proof and submit proof and you will get fees.
+This repository contains two tools:
+1. `cli` a command-line tool that lets you interact with WORM by running different subcommands. You can create proofs on your own machine...
+2. `server` helps you run a WORM miner server that other people can use to generate proof and submit proof and you will get fees.
 
 # How to Build from source:
 
-first you need rust toolchain:
+First you need rust toolchain:
 ```
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
@@ -32,7 +32,7 @@ Note: If you want to deploy with **Docker**, check out [this](https://github.com
 `worm-miner burn --network sepolia/anvil/mainnet --private-key 0x --amount 1.0 --reveal 0.5 --broadcaster-fee 0.1 --sell-on-uniswap 0.1 --receiver-address 0x.. --prover-fee 0.01`
 
 - `--network`: Optional (Default: `mainnet`)
-- `--private-key`: Required (The private key of the account which performs the burn)
+- `--private-key`: Required (the private key of the account performing the burn)
 - `--amount`: Required (The amount we want to send to the burn-address)
 - `--reveal`: Optional (Default: maximum, same as `--amount`) (You can partially reveal the burned amount as BETH and encrypt the rest in a note file)
 - `--broadcaster-fee`: Optional (Default: 0)
@@ -49,7 +49,7 @@ Minting BETH
 
 `worm-miner mint --broadcaster 0x1234... burn.json`
 
-- `--broadcaster`: Required (It can be a http endpoint `https://relayer.worm.cx/relay` (If we want someone else to broadcast for us, see the Relay section) or a private key `0x...` (If we want to broadcast ourself with another private key))
+- `--broadcaster`: Required (can be a HTTP endpoint `https://prover-1.worm.cx` (If we want someone else to broadcast for us, see the Relay section) or a private key `0x...` (If we want to broadcast ourself with another private key))
 
 ## Coming Soon features:
 1. Spend
@@ -61,12 +61,12 @@ Minting BETH
 Spins up a HTTP server, generates proofs and broadcasts them on behalf of others.
 
 - GET `/proof` returns minimum proving fee of the relayer.
-- POST `/proof` gets inputs of the proof-of-burn zk circuit and starts proving.
+- POST `/proof` accepts proof-of-burn zk circuit inputs and starts proof generation
 - GET `/proof/{nullifier}` gets cached proof for the given nullifier.
 - GET `/relay` returns minimum broadcasting fee of the relayer
 - POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
 
-Note: first time you run `server` binary it will create a `~/.worm-miner/server_config.json`:
+Note: The first time you run `server` binary it will create a configuration file at `~/.worm-miner/server_config.json`:
 ```json
 {
   "min_prover_fee": "0.001",
@@ -75,4 +75,4 @@ Note: first time you run `server` binary it will create a `~/.worm-miner/server_
   "port": 8080
 }
 ```
-This private key is used to sign submit proof transactions and it will get all the fees (prover-fee and broadcaster-fee)
+This private key is used to sign proof submission transactions and will collect all fees (prover-fee and broadcaster-fee)
