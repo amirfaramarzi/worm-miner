@@ -1,4 +1,31 @@
-# worm-miner
+# Worm Miner
+
+There are 2 tools in this repo:
+1. `cli` is a tool that helps you interact with Worm by running different subcommands it lets you make your own proof on your machine without using someone elses server.
+2. `server` helps you run a Worm miner server that other people can use to generate proof and submit proof and you will get fees.
+
+# How to Build from source:
+
+first you need rust toolchain:
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### Compile CLI:
+```
+cargo build --bin cli
+```
+You can find you binary in `target/release/cli`
+
+### Compile Server:
+```
+cargo build --bin server
+```
+You can find you binary in `target/release/server`
+
+Note: If you want to deploy with **Docker**, check out [this](https://github.com/orgs/worm-privacy/packages?repo_name=worm-miner)
+
+# CLI sub commands
 
 ## Burn
 
@@ -24,31 +51,12 @@ Minting BETH
 
 - `--broadcaster`: Required (It can be a http endpoint `https://relayer.worm.cx/relay` (If we want someone else to broadcast for us, see the Relay section) or a private key `0x...` (If we want to broadcast ourself with another private key))
 
-## Spend
+## Coming Soon features:
+1. Spend
+2. Participate
+3. Claim
 
-`worm-miner spend --note note.json --amount 0.1`
-
-Creates a new note file for the remaining amount (E.g note2.json)
-
-## Participate
-
-`worm-miner [COMMON OPTS] participate  --num-epochs 10 --amount-per-epoch 0.1`
-
-- `--num-epochs`: Participate in N next epochs
-- `--amount-per-epoch`: Put X BETH per epochs
-- `--network`: Optional (Default: `mainnet`)
-
-Creates a participation file: `participate_10_0.1.json`
-
-## Claim
-
-`worm-miner [COMMON OPTS] claim participate_*.json`
-
-Claim all input participation.
-
-Note: to use anvil network you should provide `ANVIL_BETH_ADDRESS` `ANVIL_WORM_ADDRESS` and `ANVIL_STAKING_ADDRESS` env variables if needed
-
-## Relay
+## Server
 
 Spins up a HTTP server, generates proofs and broadcasts them on behalf of others.
 
@@ -57,3 +65,14 @@ Spins up a HTTP server, generates proofs and broadcasts them on behalf of others
 - GET `/proof/{nullifier}` gets cached proof for the given nullifier.
 - GET `/relay` returns minimum broadcasting fee of the relayer
 - POST `/relay` gets inputs of a `mintCoin()` transaction and submits on behalf of you.
+
+Note: first time you run `server` binary it will create a `~/.worm-miner/server_config.json`:
+```json
+{
+  "min_prover_fee": "0.001",
+  "min_broadcaster_fee": "0.001",
+  "private_key": "0x12345678...",
+  "port": 8080
+}
+```
+This private key is used to sign submit proof transactions and it will get all the fees (prover-fee and broadcaster-fee)
