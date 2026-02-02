@@ -70,8 +70,8 @@ impl ProofJob {
 
         let mut child = tokio::process::Command::new(std::env::current_exe()?)
             .arg("rapidsnark")
-            .arg(input_wit_file)
-            .arg(output_wit_path)
+            .arg(&input_wit_file)
+            .arg(&output_wit_path)
             .arg(&proof_file_path)
             .spawn()
             .expect("Failed to spawn child process");
@@ -87,7 +87,11 @@ impl ProofJob {
             ));
         }
 
-        let proof = serde_json::from_str(&tokio::fs::read_to_string(proof_file_path).await?)?;
+        let proof = serde_json::from_str(&tokio::fs::read_to_string(&proof_file_path).await?)?;
+
+        fs::remove_file(input_wit_file)?;
+        fs::remove_file(output_wit_path)?;
+        fs::remove_file(proof_file_path)?;
 
         Ok(proof)
     }
