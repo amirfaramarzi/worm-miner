@@ -61,7 +61,7 @@ impl Network {
             Network::Anvil => {
                 env::var("ANVIL_BETH_ADDRESS").expect("provide ANVIL_BETH_ADDRESS env variable")
             }
-            Network::Sepolia => "0x0AF06bBE75a98B0062E67D4f49442cf73fA17586".to_string(),
+            Network::Sepolia => "0x98B9b8879EC255dfcfA55dF19d9FFc0987d68064".to_string(),
             Network::Mainnet => "todo".to_string(),
         };
         Address::from_str(&address_str)
@@ -74,7 +74,7 @@ impl Network {
             Network::Anvil => {
                 env::var("ANVIL_WORM_ADDRESS").expect("provide ANVIL_WORM_ADDRESS env variable")
             }
-            Network::Sepolia => "0xa88EBF41b31e1A77a20E5c347648381355718E35".to_string(),
+            Network::Sepolia => "0x0eD61b3696F0dafFaE01E7EEA22711E7860b1118".to_string(),
             Network::Mainnet => "todo".to_string(),
         };
         Address::from_str(&address_str)
@@ -86,7 +86,7 @@ impl Network {
         let address_str = match self {
             Network::Anvil => env::var("ANVIL_STAKING_ADDRESS")
                 .expect("provide ANVIL_STAKING_ADDRESS env variable"),
-            Network::Sepolia => "0x5A7B763c4f1acEa5f485a269edE40EC0778F40b0".to_string(),
+            Network::Sepolia => "0x0116E4bDc0282419e58Af45dB79233Fb7cF02663".to_string(),
             Network::Mainnet => "todo".to_string(),
         };
         Address::from_str(&address_str).map_err(|e| {
